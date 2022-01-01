@@ -12,19 +12,24 @@ Array.from(document.querySelectorAll('.all-letters .letter')).forEach((letterEl)
 inputs[0].focus()
 
 inputs.forEach((el) => {
-    el.addEventListener('keypress', (e) => {
-        setTimeout(() => {
-            if (e.keyCode === 13) {
-                return submitGuess()
-            }
+    el.addEventListener('keydown', (e) => {
+        const index = Number(e.target.id.split('-')[1])
 
-            const index = Number(e.target.id.split('-')[1])
-            if (index < 4) {
-                inputs[index+1].focus()
-            } else {
-                submitGuessEl.focus()
+        if (e.keyCode === 13) {
+            return submitGuess()
+        } else if (e.keyCode === 8) {
+            if (!e.target.value && index > 0) {
+                inputs[index-1].focus()
             }
-        }, 30)
+        } else if (e.keyCode >= 65 && e.keyCode <= 90 ) {
+            setTimeout(() => {
+                if (index < 4) {
+                    inputs[index+1].focus()
+                } else {
+                    submitGuessEl.focus()
+                }
+            }, 30)
+        }
     })
 })
 

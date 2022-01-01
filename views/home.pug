@@ -13,7 +13,7 @@ block content
                 aside.guess
                     - var i = 0;
                     while i < wordLength
-                        input.letter(type='text', id='guess-' + i, maxlength=1)
+                        input.letter(type='text', id='guess-' + i, maxlength='1')
                         - i++
                     input.submit-guess(type='button', id='submit-guess', value='?')
                 
