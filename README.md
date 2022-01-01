@@ -1,2 +1,3 @@
-# wordle
-Wordle Clone
+# Wordle
+
+A Wordle Clone
