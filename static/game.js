@@ -28,11 +28,16 @@ inputs.forEach((el) => {
     el.addEventListener('input', (e) => {
         if (e.inputType === 'insertText') {
             const index = Number(e.target.id.split('-')[1])
-            if (index < 4) {
-                inputs[index+1].focus()
-            } else {
-                submitGuessEl.focus()
+
+            if (e.target.value.length === 1) {
+                if (index < 4) {
+                    inputs[index+1].focus()
+                } else {
+                    submitGuessEl.focus()
+                }
             }
+        } else {
+            alert('other event input type:', e.inputType)
         }
     })
 })
