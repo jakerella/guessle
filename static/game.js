@@ -13,22 +13,26 @@ inputs[0].focus()
 
 inputs.forEach((el) => {
     el.addEventListener('keydown', (e) => {
-        const index = Number(e.target.id.split('-')[1])
-
         if (e.keyCode === 13) {
-            return submitGuess()
+            e.stopPropagation()
+            submitGuess()
+            return false
         } else if (e.keyCode === 8) {
+            const index = Number(e.target.id.split('-')[1])
             if (!e.target.value && index > 0) {
                 inputs[index-1].focus()
             }
-        } else if (e.keyCode >= 65 && e.keyCode <= 90 ) {
-            setTimeout(() => {
-                if (index < 4) {
-                    inputs[index+1].focus()
-                } else {
-                    submitGuessEl.focus()
-                }
-            }, 30)
+        }
+    })
+
+    el.addEventListener('input', (e) => {
+        if (e.inputType === 'insertText') {
+            const index = Number(e.target.id.split('-')[1])
+            if (index < 4) {
+                inputs[index+1].focus()
+            } else {
+                submitGuessEl.focus()
+            }
         }
     })
 })
