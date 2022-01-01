@@ -23,10 +23,6 @@ const sessionOptions = {
     name: 'wordle',
     saveUninitialized: false
 }
-if (process.env.NODE_ENV !== 'development') {
-    app.set('trust proxy', 1)
-    sessionOptions.cookie.secure = true
-}
 app.use(session(sessionOptions))
 
 
