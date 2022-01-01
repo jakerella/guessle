@@ -10,8 +10,8 @@ header {
 }
 .letter {
     display: inline-block;
-    width: 4rem;
-    padding: 1.1rem 0 1.4rem 0;
+    width: 3.8rem;
+    padding: 0.8rem 0 0.9rem 0;
     border: 1px solid #666;
     border-radius: 0.3rem;
     margin: 0 0.3rem;
@@ -83,7 +83,7 @@ input.letter {
 
 .all-letters .letter {
     width: 1.9rem;
-    margin: 0.4rem 0.2rem;
+    margin: 0.4rem 0.15rem;
     padding: 0.2rem 0 0.5rem 0;
 }
 .all-letters .middle-row {
