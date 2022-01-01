@@ -4,7 +4,7 @@ html(lang='en-US')
         meta(charset='UTF-8')
         meta(http-equiv='content-type', content='text/html; charset=utf-8')
 
-        title= title
+        title= 'Guessle ' + title
 
         meta(name='description', content='A Wordle Clone')
         meta(name='viewport', content='width=device-width, initial-scale=1')
@@ -13,7 +13,11 @@ html(lang='en-US')
     
     body
         header
-            h1 Wordle
+            h1 Guessle 
+            p
+                | Yeah, it's a 
+                a(href='https://www.powerlanguage.co.uk/wordle/') Wordle 
+                | clone.
 
         main#main-content
             if error
