@@ -92,6 +92,9 @@ input.letter {
 .all-letters .bottom-row {
     margin-left: 2.5rem;
 }
+.letter-del {
+    background-color: #ddd;
+}
 
 .actions {
     margin-top: 1rem;
