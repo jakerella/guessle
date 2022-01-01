@@ -1,0 +1,116 @@
+
+.guess {
+    margin: 1rem 0;
+    font-size: 2rem;
+    text-transform: capitalize;
+}
+.letter {
+    display: inline-block;
+    width: 5rem;
+    padding: 1.1rem 0 1.4rem 0;
+    border: 1px solid #666;
+    border-radius: 0.3rem;
+    margin: 0 0.3rem;
+    text-align: center;
+}
+
+.letter.check-0 {
+    background-color: #bbb;
+}
+.letter.check-1 {
+    background-color: #cc5;
+}
+.letter.check-2 {
+    background-color: #9c9;
+}
+
+input.letter {
+    font-size: 2rem;
+    text-transform: capitalize;
+}
+.submit-guess {
+    font-size: 2rem;
+    width: 5rem;
+    padding: 1.1rem 0 1.4rem 0;
+    background-color: #eee;
+    border: 1px solid #999;
+    border-radius: 0.3rem;
+    cursor: pointer;
+    box-shadow: 1px 1px 3px #ddd;
+    position: relative;
+}
+.submit-guess:hover, .submit-guess:active {
+    background-color: #ddd;
+}
+.submit-guess:active {
+    box-shadow: none;
+    top: 1px;
+    left: 1px;
+}
+
+.guess-info {
+    display: none;
+    padding: 0.5em 1em;
+    border: 1px solid #66d;
+    border-radius: 0.3rem;
+    background-color: #ddf;
+    width: 30rem;
+}
+.guess-info.error {
+    border-color: #d66;
+    background-color: #fdd;
+}
+.guess-info.success {
+    border-color: #6d6;
+    background-color: #dfd;
+}
+
+.solution-info {
+    font-size: 1.2rem;
+    border: 1px solid #6d6;
+    background-color: #dfd;
+    border-radius: 0.3rem;
+    padding: 1em 2em;
+}
+
+.all-letters .letter {
+    width: 3rem;
+    margin: 0.4rem 0.3rem;
+    padding: 0.5em 0 0.7em 0;
+}
+.all-letters .middle-row {
+    margin-left: 2em;
+}
+.all-letters .bottom-row {
+    margin-left: 4em;
+}
+
+.actions {
+    margin-top: 1em;
+}
+
+
+a.button, a.button:hover, a.button:active, a.button:visited {
+    color: #000;
+    text-decoration: none;
+}
+
+.button {
+    padding: 0.5em 1em;
+    background-color: #eee;
+    border: 1px solid #999;
+    border-radius: 0.2em;
+    cursor: pointer;
+    box-shadow: 1px 1px 3px #ddd;
+    position: relative;
+    margin: 0.5em 1em;
+}
+.button:hover, .button:active {
+    background-color: #ddd;
+}
+.button:active {
+    box-shadow: none;
+    top: 1px;
+    left: 1px;
+}
+

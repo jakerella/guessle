@@ -2,5 +2,51 @@ extends partials/layout.pug
 
 block content
     p 
-        | This is the Wordle Clone 
+        | This is the Wordle Clone
+    
+    article#game-board 
+        section.past-guesses
+            each guess in guesses
+                aside.guess
+                    each letter in guess
+                        span(class='letter check-' + letter.check)= letter.letter
+        
+        if !solved
+            section.guess-inputs
+                aside.guess
+                    - var i = 0;
+                    while i < wordLength
+                        input.letter(type='text', id='guess-' + i, maxlength=1)
+                        - i++
+                    input.submit-guess(type='button', id='submit-guess', value='?')
+                
+                p.guess-info
+            
+            section.all-letters
+                aside.top-row
+                    each letter in ['q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p']
+                        span(class='letter letter-' + letter)= letter
+                aside.middle-row
+                    each letter in ['a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l']
+                        span(class='letter letter-' + letter)= letter
+                aside.bottom-row
+                    each letter in ['z', 'x', 'c', 'v', 'b', 'n', 'm']
+                        span(class='letter letter-' + letter)= letter
+        
+        else
+            p.solution-info
+                | Congratulations! You solved this Wordle in 
+                strong= guesses.length
+                |  guess(es)!
 
+        
+        - var text = 'I give up!'
+        if solved
+            - text = 'New Word Please!'
+        aside.actions
+            a.new-word.button(href='/?new')= text
+            span
+                | (This will start a new game.)
+
+
+    script(src='game.js')
