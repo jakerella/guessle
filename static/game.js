@@ -7,6 +7,7 @@ const guessInfo = document.querySelector('.guess-info')
 const letterHints = {}
 Array.from(document.querySelectorAll('.all-letters .letter')).forEach((letterEl) => {
     letterHints[letterEl.innerText] = letterEl
+    letterEl.addEventListener('click', handleKeyboardEntry)
 })
 
 inputs[0].focus()
@@ -28,7 +29,6 @@ inputs.forEach((el) => {
     el.addEventListener('input', (e) => {
         if (e.inputType === 'insertText') {
             const index = Number(e.target.id.split('-')[1])
-
             if (e.target.value.length === 1) {
                 if (index < 4) {
                     inputs[index+1].focus()
@@ -36,11 +36,28 @@ inputs.forEach((el) => {
                     submitGuessEl.focus()
                 }
             }
-        } else {
-            alert('other event input type:', e.inputType)
         }
     })
 })
+
+function handleKeyboardEntry(e) {
+    const letter = e.target.innerText
+    if (letter === 'del') {
+        let lastEl = null
+        inputs.forEach((el) => {
+            if (el.value) { lastEl = el }
+        })
+        lastEl.value = ''
+    } else {
+        for (let i=0; i<inputs.length; ++i) {
+            if (!inputs[i].value) {
+                inputs[i].value = letter
+                break
+            }
+        }
+    }
+}
+
 
 submitGuessEl.addEventListener('click', submitGuess)
 

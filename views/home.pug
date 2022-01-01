@@ -15,7 +15,7 @@ block content
                     while i < wordLength
                         input.letter(type='text', id='guess-' + i, maxlength='1')
                         - i++
-                    input.submit-guess(type='button', id='submit-guess', value='?')
+                    input.submit-guess(type='button', id='submit-guess', value='guess')
                 
                 p.guess-info
             
@@ -27,7 +27,7 @@ block content
                     each letter in ['a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l']
                         span(class='letter letter-' + letter)= letter
                 aside.bottom-row
-                    each letter in ['z', 'x', 'c', 'v', 'b', 'n', 'm']
+                    each letter in ['z', 'x', 'c', 'v', 'b', 'n', 'm', 'del']
                         span(class='letter letter-' + letter)= letter
         
         else
