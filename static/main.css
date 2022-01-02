@@ -3,6 +3,20 @@ header {
     text-align: center;
 }
 
+header nav ul {
+    list-style: none;
+    display: flex;
+    justify-content: space-between;
+    padding: 0 0.4rem;
+    margin: 0;
+    font-size: 1.5rem;
+}
+header h1 {
+    font-variant: small-caps;
+    font-size: 1.8rem;
+    margin-top: 0;
+}
+
 .game-board {
     max-width: 25rem;
     margin: 0 auto;
@@ -34,6 +48,27 @@ header {
 }
 .letter.check-2 {
     background-color: #9c9;
+}
+
+.game-help {
+    display: none;
+    width: 85%;
+    margin: 0 auto;
+    border: 1px solid #66d;
+    border-radius: 0.3rem;
+    background-color: #eef;
+    padding: 1rem;
+}
+.game-help h2 {
+    font-variant: small-caps;
+    font-size: 1.3rem;
+    margin: 0;
+}
+.game-help .letter {
+    min-height: auto;
+    padding: 0.1rem 0.2rem;
+    margin: 0.1rem;
+    width: auto;
 }
 
 .submit-guess {

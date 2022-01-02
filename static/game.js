@@ -3,6 +3,8 @@ const pastGuesses = document.querySelector('.past-guesses')
 const inputs = Array.from(document.querySelectorAll('.input.letter'))
 const submitGuessEl = document.querySelector('#submit-guess')
 const guessInfo = document.querySelector('.guess-info')
+const gameHelp = document.querySelector('.game-help')
+gameHelp.style.display = 'none'
 
 const letterHints = {}
 Array.from(document.querySelectorAll('.all-letters .letter')).forEach((letterEl) => {
@@ -17,8 +19,34 @@ document.body.addEventListener('keydown', (e) => {
         handleKeyboardEntry('del')
     } else if (e.code === 'Enter') {
         submitGuess()
+    } else if (e.code === 'Slash') {  // "?" is Shift-Slash, but we'll just capture either
+        toggleHelp()
     }
 })
+
+submitGuessEl.addEventListener('click', submitGuess)
+
+document.querySelector('.new-word').addEventListener('click', async (e) => {
+    if (e.target.innerText.includes('give up')) {
+        const resp = await fetch('/answer')
+        const result = await resp.json()
+        if (resp.status === 200) {
+            window.alert(`No problem! The answer was: ${result.solution}`)
+        }
+    }
+})
+
+document.querySelector('.help').addEventListener('click', toggleHelp)
+document.querySelector('.options').addEventListener('click', showOptions)
+
+
+function toggleHelp() {
+    gameHelp.style.display = (gameHelp.style.display === 'none') ? 'block' : 'none'
+}
+
+function showOptions() {
+    console.log('options?')
+}
 
 function handleKeyboardEntry(letter) {
     if (letter === 'del') {
@@ -36,19 +64,6 @@ function handleKeyboardEntry(letter) {
         }
     }
 }
-
-submitGuessEl.addEventListener('click', submitGuess)
-
-document.querySelector('.new-word').addEventListener('click', async (e) => {
-    if (e.target.innerText.includes('give up')) {
-        const resp = await fetch('/answer')
-        const result = await resp.json()
-        if (resp.status === 200) {
-            window.alert(`No problem! The answer was: ${result.solution}`)
-        }
-    }
-})
-
 
 async function submitGuess() {
     const guess = inputs.map((el) => el.innerText.trim().toLowerCase()).filter((l) => !!l).join('')

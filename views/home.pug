@@ -1,6 +1,45 @@
 extends partials/layout.pug
 
 block content
+
+    article.game-help
+        h2 Game Help
+        p 
+            | The object of the game is to guess the word. You do this by getting 
+            | clues each time you guess. If you see a 
+            span.letter.check-0 letter 
+            | in gray, it does not appear in the solution. If you see a 
+            span.letter.check-1 letter 
+            | in yellow, it appears in the solution, but not where you have have 
+            | guessed. And if you see a 
+            span.letter.check-2 letter 
+            | in green, you have that one correct!
+        p 
+            | Once you have all of the letters guessed, you win! You can always 
+            | give up on that word and ask for a new one. And once you win, you 
+            | can ask for a new word. (You will also seea link to the definition 
+            | of the solved word in case you want to learn about it!)
+
+        p 
+            | You can either use the in-game virtual keyboard to type or you can 
+            | use an actual keyboard. Thje in-game virtual keyboard also shows 
+            | you letters you have guessed already, and their result.
+
+        p 
+            | Words come from a set of the 5000 most common English words within 
+            | the given length (5 characters by default). When you guess a word, 
+            | it must be in the game's dictionary! However, this dictionary includes 
+            | many more words than the most common 5000.
+
+        p 
+            strong Note: 
+            | Some words have more than 1 of the same letter (for example, "brood")!
+            | In this case, you may get a green or yellow indicator when you use one 
+            | of those letters, but there may be a duplicate! If you guess a word with 
+            | two letters, you might get one green and one yellow! (A gray letter 
+            em always 
+            | means it does not appear at all in the solution.)
+
     article.game-board 
         section.past-guesses
             each guess in guesses
