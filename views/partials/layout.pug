@@ -16,15 +16,11 @@ html(lang='en-US')
             nav
                 ul
                     li.help
-                        | 🛈
+                        | ?
                     li.options
                         | ⛭
             
             h1 Guessle
-            p
-                | Yeah, it's a 
-                a(href='https://www.powerlanguage.co.uk/wordle/') Wordle 
-                | clone.
 
         main#main-content
             if error
@@ -37,6 +33,10 @@ html(lang='en-US')
             block content
 
         footer
+            p 
+                | Yeah, it's a 
+                a(href='https://www.powerlanguage.co.uk/wordle/') Wordle
+                |  clone.
             p
                 | &copy; Jordan Kasper 2021 | See this code on 
                 a(href='https://github.com/jakerella/wordle' target='_blank' title='View the Wordle Clone code on GitHub')

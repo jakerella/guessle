@@ -5,6 +5,8 @@ const submitGuessEl = document.querySelector('#submit-guess')
 const guessInfo = document.querySelector('.guess-info')
 const gameHelp = document.querySelector('.game-help')
 gameHelp.style.display = 'none'
+const gameOptionsEl = document.querySelector('.game-options')
+gameOptionsEl.style.display = 'none'
 
 const letterHints = {}
 Array.from(document.querySelectorAll('.all-letters .letter')).forEach((letterEl) => {
@@ -37,15 +39,15 @@ document.querySelector('.new-word').addEventListener('click', async (e) => {
 })
 
 document.querySelector('.help').addEventListener('click', toggleHelp)
-document.querySelector('.options').addEventListener('click', showOptions)
+document.querySelector('.options').addEventListener('click', toggleOptions)
 
 
 function toggleHelp() {
     gameHelp.style.display = (gameHelp.style.display === 'none') ? 'block' : 'none'
 }
 
-function showOptions() {
-    console.log('options?')
+function toggleOptions() {
+    gameOptionsEl.style.display = (gameOptionsEl.style.display === 'none') ? 'block' : 'none'
 }
 
 function handleKeyboardEntry(letter) {

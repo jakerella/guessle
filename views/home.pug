@@ -2,8 +2,8 @@ extends partials/layout.pug
 
 block content
 
-    article.game-help
-        h2 Game Help
+    article.game-help.info-block
+        h2.sub-header Game Help
         p 
             | The object of the game is to guess the word. You do this by getting 
             | clues each time you guess. If you see a 
@@ -39,6 +39,23 @@ block content
             | two letters, you might get one green and one yellow! (A gray letter 
             em always 
             | means it does not appear at all in the solution.)
+
+        p 
+            strong
+                | Why did you make this 
+                a(href='https://www.powerlanguage.co.uk/wordle/') Wordle 
+                | clone?
+        p 
+            | That's a fair question. I like the game, but I didn't like only being 
+            | able to play once a day, so I made this. I'm a software engineer by 
+            | trade, and I like to tinker. I also can now add in options that I like!
+            | Curious how this is made? You can see all of the code on 
+            a(href='https://github.com/jakerella/wordle' target='_blank' title='View the Wordle Clone code on GitHub') GitHub!
+
+    article.game-options.info-block
+        h2.sub-header Game Options
+
+        p Coming soon!
 
     article.game-board 
         section.past-guesses

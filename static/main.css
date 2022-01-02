@@ -11,6 +11,13 @@ header nav ul {
     margin: 0;
     font-size: 1.5rem;
 }
+header nav .help {
+    border: 1px solid #000;
+    border-radius: 50%;
+    display: inline-block;
+    width: 1.9rem;
+}
+
 header h1 {
     font-variant: small-caps;
     font-size: 1.8rem;
@@ -50,7 +57,7 @@ header h1 {
     background-color: #9c9;
 }
 
-.game-help {
+.info-block {
     display: none;
     width: 85%;
     margin: 0 auto;
@@ -59,7 +66,7 @@ header h1 {
     background-color: #eef;
     padding: 1rem;
 }
-.game-help h2 {
+h2.sub-header {
     font-variant: small-caps;
     font-size: 1.3rem;
     margin: 0;
@@ -69,6 +76,10 @@ header h1 {
     padding: 0.1rem 0.2rem;
     margin: 0.1rem;
     width: auto;
+}
+.game-options {
+    border-color: #000;
+    background-color: #eee;
 }
 
 .submit-guess {
