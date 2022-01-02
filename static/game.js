@@ -1,5 +1,6 @@
 
 //------------------ Cache some DOM elements -------------------- //
+const gameBoard = document.querySelector('.game-board')
 const pastGuesses = document.querySelector('.past-guesses')
 const inputs = Array.from(document.querySelectorAll('.input.letter'))
 const submitGuessEl = document.querySelector('#submit-guess')
@@ -9,6 +10,25 @@ gameHelp.style.display = 'none'
 const gameOptionsEl = document.querySelector('.game-options')
 gameOptionsEl.style.display = 'none'
 const gameStats = document.querySelector('.stats')
+
+
+//------------------ Check for options -------------------- //
+const OPTIONS_KEY = 'guessle-options'
+let blankOptions = JSON.stringify({ dark: false, duplicateLetters: true, wordLength: 5 })
+let options = localStorage.getItem(OPTIONS_KEY)
+if (options) {
+    try {
+        options = JSON.parse(options)
+    } catch(err) {
+        console.warn('Bad options:', err.message)
+        options = JSON.parse(blankOptions)
+        localStorage.setItem(OPTIONS_KEY, JSON.stringify(options))
+    }
+} else {
+    options = JSON.parse(blankOptions)
+    localStorage.setItem(OPTIONS_KEY, JSON.stringify(options))
+}
+initOptions(options)
 
 
 //------------------ Check for stats -------------------- //
@@ -60,13 +80,18 @@ document.querySelector('.new-word').addEventListener('click', async (e) => {
 })
 
 document.querySelector('.help').addEventListener('click', toggleHelp)
+document.querySelector('.close-help').addEventListener('click', toggleHelp)
 document.querySelector('.options').addEventListener('click', toggleOptions)
+document.querySelector('.close-options').addEventListener('click', toggleOptions)
+
 
 document.querySelector('.reset-stats').addEventListener('click', () => {
     stats = JSON.parse(blankStats)
     localStorage.setItem(STATS_KEY, JSON.stringify(stats))
     showStats(stats)
 })
+
+gameOptionsEl.querySelector('#dark-mode').addEventListener('change', toggleDarkMode)
 
 
 //------------------ Main event handlers -------------------- //
@@ -77,6 +102,17 @@ function toggleHelp() {
 
 function toggleOptions() {
     gameOptionsEl.style.display = (gameOptionsEl.style.display === 'none') ? 'block' : 'none'
+}
+
+function toggleDarkMode() {
+    options.dark = !options.dark
+    console.log(options);
+    if (options.dark) {
+        document.body.classList.add('dark-mode')
+    } else {
+        document.body.classList.remove('dark-mode')
+    }
+    localStorage.setItem(OPTIONS_KEY, JSON.stringify(options))
 }
 
 function handleKeyboardEntry(letter) {
@@ -133,7 +169,7 @@ async function submitGuess() {
             localStorage.setItem(STATS_KEY, JSON.stringify(stats))
             showStats(stats)
 
-            document.querySelector('.game-board').innerHTML += [
+            gameBoard.innerHTML += [
                 `<p class='solution-info'>Congratulations! You solved this Guessle in 
                 <strong>${result.guesses.length}</strong> guess${(result.guesses.length === 1) ? '' : 'es'}!
                 <br><br>
@@ -176,6 +212,13 @@ function showStats(stats) {
     if (stats.played > 0) {
         gameStats.querySelector('.win-percent').innerText = Math.round((stats.won / stats.played) * 100)
         gameStats.querySelector('.quit-percent').innerText = Math.round((stats.quit / stats.played) * 100)
+    }
+}
+
+function initOptions(options) {
+    if (options.dark) {
+        document.body.classList.add('dark-mode')
+        gameOptionsEl.querySelector('#dark-mode').setAttribute('checked', 'checked')
     }
 }
 

@@ -1,4 +1,9 @@
 
+body.dark-mode {
+    background-color: #222;
+    color: #eee;
+}
+
 header {
     text-align: center;
 }
@@ -16,6 +21,9 @@ header nav .help {
     border-radius: 50%;
     display: inline-block;
     width: 1.9rem;
+}
+.dark-mode header nav .help {
+    border-color: #eee;
 }
 
 header h1 {
@@ -57,6 +65,11 @@ header h1 {
     background-color: #9c9;
 }
 
+.dark-mode .letter.check-0, .dark-mode .letter.check-1, .dark-mode .letter.check-2 {
+    color: #333;
+}
+
+
 .info-block {
     display: none;
     width: 85%;
@@ -65,6 +78,7 @@ header h1 {
     border-radius: 0.3rem;
     background-color: #eef;
     padding: 1rem;
+    color: #000;
 }
 h2.sub-header {
     font-variant: small-caps;
@@ -81,6 +95,12 @@ h2.sub-header {
     border-color: #000;
     background-color: #eee;
 }
+.game-options label {
+    display: block;
+    margin: 0.5em 0;
+    font-size: 1.2rem;
+}
+
 
 .submit-guess {
     display: block;
@@ -113,6 +133,7 @@ h2.sub-header {
     width: 80%;
     margin: 1rem auto;
     text-align: center;
+    color: #000;
 }
 .guess-info.error {
     border-color: #d66;
@@ -131,6 +152,9 @@ h2.sub-header {
     padding: 1rem 2rem;
     text-align: center;
 }
+.dark-mode .solution-info {
+    color: #000;
+}
 
 .all-letters .letter {
     width: 1.9rem;
@@ -147,6 +171,9 @@ h2.sub-header {
 .letter-del {
     background-color: #ddd;
 }
+.dark-mode .letter-del {
+    color: #333;
+}
 
 .stats {
     text-align: center;
@@ -161,6 +188,9 @@ h2.sub-header {
 a.button, a.button:hover, a.button:active, a.button:visited {
     color: #000;
     text-decoration: none;
+}
+.dark-mode a.button, .dark-mode a.button:hover, .dark-mode a.button:active, .dark-mode a.button:visited {
+    color: #eee;
 }
 
 .button {
@@ -182,11 +212,20 @@ a.button, a.button:hover, a.button:active, a.button:visited {
     left: 1px;
 }
 
+.dark-mode .button {
+    background-color: #555;
+    box-shadow: 1px 1px 3px #999;
+    color: #eee;
+}
+.dark-mode .button:hover, .dark-mode .button:active {
+    background-color: #555;
+}
+
 
 footer {
     margin: 2em 0 1em 0;
     border-top: 1px solid #ddd;
-    color: #666;
+    color: #999;
 }
 footer a:link, footer a:visited {
     color: #668;
