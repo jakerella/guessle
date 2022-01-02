@@ -148,6 +148,10 @@ h2.sub-header {
     background-color: #ddd;
 }
 
+.stats {
+    text-align: center;
+}
+
 .actions {
     margin-top: 1rem;
     text-align: center;

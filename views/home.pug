@@ -101,6 +101,28 @@ block content
             a.new-word.button(href='/?new')= text
             p
                 | (This will start a new game.)
-
+            
+        article.stats
+            p
+                | You have played 
+                span.play-count 0
+                |  games and won 
+                span.win-count 0
+                |  of those (
+                span.win-percent 0
+                | %)
+                br
+                | with 
+                span.guess-avg 0
+                |  guesses on average.
+            p
+                | You have given up 
+                span.quit-count 0
+                |  times (
+                span.quit-percent 0
+                | %).
+            
+            aside.actions
+                input.reset-stats.button(type='button', value='Reset Stats')
 
     script(src='game.js')

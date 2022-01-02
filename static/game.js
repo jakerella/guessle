@@ -1,4 +1,5 @@
 
+//------------------ Cache some DOM elements -------------------- //
 const pastGuesses = document.querySelector('.past-guesses')
 const inputs = Array.from(document.querySelectorAll('.input.letter'))
 const submitGuessEl = document.querySelector('#submit-guess')
@@ -7,6 +8,32 @@ const gameHelp = document.querySelector('.game-help')
 gameHelp.style.display = 'none'
 const gameOptionsEl = document.querySelector('.game-options')
 gameOptionsEl.style.display = 'none'
+const gameStats = document.querySelector('.stats')
+
+
+//------------------ Check for stats -------------------- //
+const STATS_KEY = 'guessle-stats'
+let blankStats = JSON.stringify({ played: 0, won: 0, quit: 0, guessAvg: 0 })
+let stats = localStorage.getItem(STATS_KEY)
+if (stats) {
+    try {
+        stats = JSON.parse(stats)
+        if (stats.played !== (stats.won + stats.quit)) {
+            throw new Error('Stats look out of balance, so unfortunately they are getting reset: ' + JSON.stringify(stats))
+        }
+    } catch(err) {
+        console.warn('Bad stats:', err.message)
+        stats = JSON.parse(blankStats)
+        localStorage.setItem(STATS_KEY, JSON.stringify(stats))
+    }
+} else {
+    stats = JSON.parse(blankStats)
+    localStorage.setItem(STATS_KEY, JSON.stringify(stats))
+}
+showStats(stats)
+
+
+//------------------ Set up game listeners -------------------- //
 
 const letterHints = {}
 Array.from(document.querySelectorAll('.all-letters .letter')).forEach((letterEl) => {
@@ -29,18 +56,20 @@ document.body.addEventListener('keydown', (e) => {
 submitGuessEl.addEventListener('click', submitGuess)
 
 document.querySelector('.new-word').addEventListener('click', async (e) => {
-    if (e.target.innerText.includes('give up')) {
-        const resp = await fetch('/answer')
-        const result = await resp.json()
-        if (resp.status === 200) {
-            window.alert(`No problem! The answer was: ${result.solution}`)
-        }
-    }
+    await newWord(e.target.innerText.includes('give up'))
 })
 
 document.querySelector('.help').addEventListener('click', toggleHelp)
 document.querySelector('.options').addEventListener('click', toggleOptions)
 
+document.querySelector('.reset-stats').addEventListener('click', () => {
+    stats = JSON.parse(blankStats)
+    localStorage.setItem(STATS_KEY, JSON.stringify(stats))
+    showStats(stats)
+})
+
+
+//------------------ Main event handlers -------------------- //
 
 function toggleHelp() {
     gameHelp.style.display = (gameHelp.style.display === 'none') ? 'block' : 'none'
@@ -67,6 +96,19 @@ function handleKeyboardEntry(letter) {
     }
 }
 
+async function newWord(giveUp) {
+    if (giveUp) {
+        stats.played++
+        stats.quit++
+        localStorage.setItem(STATS_KEY, JSON.stringify(stats))
+        const resp = await fetch('/answer')
+        const result = await resp.json()
+        if (resp.status === 200) {
+            window.alert(`No problem! The answer was: ${result.solution}`)
+        }
+    }
+}
+
 async function submitGuess() {
     const guess = inputs.map((el) => el.innerText.trim().toLowerCase()).filter((l) => !!l).join('')
     if (guess.length !== inputs.length || !/^[a-z]+$/.test(guess)) {
@@ -81,6 +123,16 @@ async function submitGuess() {
         showLetterHints(result.guesses)
         inputs.forEach((el) => { el.innerText = '' })
         if (result.solved) {
+            if (stats.guessAvg) {
+                stats.guessAvg = (stats.guessAvg + result.guesses.length) / 2
+            } else {
+                stats.guessAvg = result.guesses.length
+            }
+            stats.played++
+            stats.won++
+            localStorage.setItem(STATS_KEY, JSON.stringify(stats))
+            showStats(stats)
+
             document.querySelector('.game-board').innerHTML += [
                 `<p class='solution-info'>Congratulations! You solved this Guessle in 
                 <strong>${result.guesses.length}</strong> guess${(result.guesses.length === 1) ? '' : 'es'}!
@@ -116,6 +168,17 @@ function showLetterHints(guesses) {
     })
 }
 
+function showStats(stats) {
+    gameStats.querySelector('.play-count').innerText = stats.played
+    gameStats.querySelector('.win-count').innerText = stats.won
+    gameStats.querySelector('.quit-count').innerText = stats.quit
+    gameStats.querySelector('.guess-avg').innerText = stats.guessAvg
+    if (stats.played > 0) {
+        gameStats.querySelector('.win-percent').innerText = Math.round((stats.won / stats.played) * 100)
+        gameStats.querySelector('.quit-percent').innerText = Math.round((stats.quit / stats.played) * 100)
+    }
+}
+
 function setMessage(msg, type='error') {
     clearMessage()
     guessInfo.innerText = msg
@@ -131,9 +194,15 @@ function clearMessage() {
     guessInfo.classList.remove('success')
 }
 
+
+//------------------ Get current game status from server -------------------- //
+
 ;(async () => {
     const resp = await fetch('/status')
     if (resp.status === 200) {
-        showLetterHints((await resp.json()).guesses)
+        const guesses = (await resp.json()).guesses
+        showLetterHints(guesses)
+
+        
     }
 })()
