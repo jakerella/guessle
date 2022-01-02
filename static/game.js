@@ -1,63 +1,41 @@
 
 const pastGuesses = document.querySelector('.past-guesses')
-const inputs = Array.from(document.querySelectorAll('input.letter'))
+const inputs = Array.from(document.querySelectorAll('.input.letter'))
 const submitGuessEl = document.querySelector('#submit-guess')
 const guessInfo = document.querySelector('.guess-info')
 
 const letterHints = {}
 Array.from(document.querySelectorAll('.all-letters .letter')).forEach((letterEl) => {
     letterHints[letterEl.innerText] = letterEl
-    letterEl.addEventListener('click', handleKeyboardEntry)
+    letterEl.addEventListener('click', (e) => { handleKeyboardEntry(e.target.innerText) })
 })
 
-inputs[0].focus()
-
-inputs.forEach((el) => {
-    el.addEventListener('keydown', (e) => {
-        if (e.keyCode === 13) {
-            e.stopPropagation()
-            submitGuess()
-            return false
-        } else if (e.keyCode === 8) {
-            const index = Number(e.target.id.split('-')[1])
-            if (!e.target.value && index > 0) {
-                inputs[index-1].focus()
-            }
-        }
-    })
-
-    el.addEventListener('input', (e) => {
-        if (e.inputType === 'insertText') {
-            const index = Number(e.target.id.split('-')[1])
-            if (e.target.value.length === 1) {
-                if (index < 4) {
-                    inputs[index+1].focus()
-                } else {
-                    submitGuessEl.focus()
-                }
-            }
-        }
-    })
+document.body.addEventListener('keydown', (e) => {
+    if (/^Key([A-Z]$)/.test(e.code)) {
+        handleKeyboardEntry(e.code[3].toLocaleLowerCase())
+    } else if (e.code === 'Backspace') {
+        handleKeyboardEntry('del')
+    } else if (e.code === 'Enter') {
+        submitGuess()
+    }
 })
 
-function handleKeyboardEntry(e) {
-    const letter = e.target.innerText
+function handleKeyboardEntry(letter) {
     if (letter === 'del') {
         let lastEl = null
         inputs.forEach((el) => {
-            if (el.value) { lastEl = el }
+            if (el.innerText) { lastEl = el }
         })
-        lastEl.value = ''
+        lastEl.innerText = ''
     } else {
         for (let i=0; i<inputs.length; ++i) {
-            if (!inputs[i].value) {
-                inputs[i].value = letter
+            if (!inputs[i].innerText) {
+                inputs[i].innerText = letter
                 break
             }
         }
     }
 }
-
 
 submitGuessEl.addEventListener('click', submitGuess)
 
@@ -73,7 +51,7 @@ document.querySelector('.new-word').addEventListener('click', async (e) => {
 
 
 async function submitGuess() {
-    const guess = inputs.map((el) => el.value.trim().toLowerCase()).filter((l) => !!l).join('')
+    const guess = inputs.map((el) => el.innerText.trim().toLowerCase()).filter((l) => !!l).join('')
     if (guess.length !== inputs.length || !/^[a-z]+$/.test(guess)) {
         return setMessage(`Please enter a ${inputs.length}-letter word.`)
     }
@@ -84,10 +62,15 @@ async function submitGuess() {
     if (resp.status === 200) {
         addGuess(result.guess)
         showLetterHints(result.guesses)
-        inputs.forEach((el) => { el.value = '' })
-        inputs[0].focus()
+        inputs.forEach((el) => { el.innerText = '' })
         if (result.solved) {
-            document.querySelector('#game-board').innerHTML += `<p class='solution-info'>Congratulations! You solved this Wordle in <strong>${result.guesses.length}</strong> guess(es)!</p>`
+            document.querySelector('.game-board').innerHTML += [
+                `<p class='solution-info'>Congratulations! You solved this Guessle in 
+                <strong>${result.guesses.length}</strong> guess${(result.guesses.length === 1) ? '' : 'es'}!
+                <br><br>
+                The word was <a target='_blank' href='https://www.google.com/search?q=define+${guess}'>${guess}</a>
+                </p>`
+            ]
             document.querySelector('.guess-inputs').style.display = 'none'
             document.querySelector('a.new-word').innerText = 'New Word Please!'
         }

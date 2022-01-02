@@ -3,10 +3,17 @@ header {
     text-align: center;
 }
 
+.game-board {
+    max-width: 25rem;
+    margin: 0 auto;
+}
+
 .guess {
     margin: 1rem 0;
     font-size: 2rem;
     text-transform: capitalize;
+    display: flex;
+    justify-content: space-evenly;
 }
 .letter {
     display: inline-block;
@@ -16,6 +23,7 @@ header {
     border-radius: 0.3rem;
     margin: 0 0.3rem;
     text-align: center;
+    min-height: 2.3rem;
 }
 
 .letter.check-0 {
@@ -28,10 +36,6 @@ header {
     background-color: #9c9;
 }
 
-input.letter {
-    font-size: 2rem;
-    text-transform: capitalize;
-}
 .submit-guess {
     display: block;
     font-size: 2rem;
@@ -79,12 +83,14 @@ input.letter {
     background-color: #dfd;
     border-radius: 0.3rem;
     padding: 1rem 2rem;
+    text-align: center;
 }
 
 .all-letters .letter {
     width: 1.9rem;
     margin: 0.4rem 0.15rem;
     padding: 0.2rem 0 0.5rem 0;
+    min-height: auto;
 }
 .all-letters .middle-row {
     margin-left: 1.5rem;
@@ -98,6 +104,7 @@ input.letter {
 
 .actions {
     margin-top: 1rem;
+    text-align: center;
 }
 
 
