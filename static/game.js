@@ -165,7 +165,7 @@ async function submitGuess() {
         inputs.forEach((el) => { el.innerText = '' })
         if (result.solved) {
             if (stats.guessAvg) {
-                stats.guessAvg = (stats.guessAvg + result.guesses.length) / 2
+                stats.guessAvg = Math.round(((stats.guessAvg + result.guesses.length) / 2) * 10) / 10
             } else {
                 stats.guessAvg = result.guesses.length
             }
