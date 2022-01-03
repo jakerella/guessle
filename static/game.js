@@ -76,7 +76,12 @@ document.body.addEventListener('keydown', (e) => {
 submitGuessEl.addEventListener('click', submitGuess)
 
 document.querySelector('.new-word').addEventListener('click', async (e) => {
-    await newWord(e.target.innerText.includes('give up'))
+    const quitting = e.target.innerText.includes('give up')
+    if (quitting && !window.confirm('Are you sure you want to give up?')) {
+        e.preventDefault()
+        return false
+    }
+    await newWord(quitting)
 })
 
 document.querySelector('.help').addEventListener('click', toggleHelp)
