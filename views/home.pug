@@ -82,7 +82,7 @@ block content
 
                 input.submit-guess(type='button', id='submit-guess', value='guess')
                 
-                p.guess-info
+                p.guess-info.hidden
             
             section.all-letters
                 aside.top-row
@@ -95,11 +95,22 @@ block content
                     each letter in ['z', 'x', 'c', 'v', 'b', 'n', 'm', 'del']
                         span(class='letter letter-' + letter)= letter
         
-        else
-            p.solution-info
+        - var hideSolution = 'hidden'
+        if solved
+            - hideSolution = ''
+        p(class='solution-info ' + hideSolution)
+            if solved
+                - var suffix = ''
+                if guesses.length > 1
+                    - suffix = 'es'
                 | Congratulations! You solved this Guessle in 
-                strong= guesses.length
-                |  guess(es)!
+                strong= guesses.length 
+                = ' guess' + suffix + '!'
+                br
+                br
+                | The word was 
+                a(target='_blank', href='https://scrabble.merriam.com/finder/' + solution)= solution
+                | .
 
         
         - var text = 'I give up!'

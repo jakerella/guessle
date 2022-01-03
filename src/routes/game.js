@@ -26,7 +26,8 @@ router.get('/', (req, res) => {
         info: null,
         guesses: game.guesses,
         wordLength: game.word.length,
-        solved: game.solved || false
+        solved: game.solved || false,
+        solution: (game.solved) ? game.word : null
     })
 })
 

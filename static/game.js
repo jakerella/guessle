@@ -174,14 +174,13 @@ async function submitGuess() {
             localStorage.setItem(STATS_KEY, JSON.stringify(stats))
             showStats(stats)
 
-            gameBoard.innerHTML += [
-                `<p class='solution-info'>Congratulations! You solved this Guessle in 
+            const solution = document.querySelector('.solution-info')
+            solution.innerHTML = `Congratulations! You solved this Guessle in 
                 <strong>${result.guesses.length}</strong> guess${(result.guesses.length === 1) ? '' : 'es'}!
                 <br><br>
-                The word was <a target='_blank' href='https://scrabble.merriam.com/finder/${guess}'>${guess}</a>
-                </p>`
-            ]
-            document.querySelector('.guess-inputs').style.display = 'none'
+                The word was <a target='_blank' href='https://scrabble.merriam.com/finder/${guess}'>${guess}</a>.`
+            solution.classList.remove('hidden')
+            document.querySelector('.guess-inputs').classList.add('hidden')
             document.querySelector('a.new-word').innerText = 'New Word Please!'
         }
         document.querySelector('.actions').scrollIntoView()
@@ -231,11 +230,11 @@ function setMessage(msg, type='error') {
     clearMessage()
     guessInfo.innerText = msg
     guessInfo.classList.add(type)
-    guessInfo.style.display = 'block'
+    guessInfo.classList.remove('hidden')
 }
 
 function clearMessage() {
-    guessInfo.style.display = 'none'
+    guessInfo.classList.add('hidden')
     guessInfo.innerText = ''
     guessInfo.classList.remove('error')
     guessInfo.classList.remove('info')
