@@ -173,7 +173,7 @@ async function submitGuess() {
                 `<p class='solution-info'>Congratulations! You solved this Guessle in 
                 <strong>${result.guesses.length}</strong> guess${(result.guesses.length === 1) ? '' : 'es'}!
                 <br><br>
-                The word was <a target='_blank' href='https://www.google.com/search?q=define+${guess}'>${guess}</a>
+                The word was <a target='_blank' href='https://scrabble.merriam.com/finder/${guess}'>${guess}</a>
                 </p>`
             ]
             document.querySelector('.guess-inputs').style.display = 'none'

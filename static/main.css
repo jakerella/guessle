@@ -16,14 +16,31 @@ header nav ul {
     margin: 0;
     font-size: 1.5rem;
 }
+header nav li {
+    cursor: pointer;
+}
 header nav .help {
-    border: 1px solid #000;
-    border-radius: 50%;
-    display: inline-block;
-    width: 1.9rem;
+    display: block;
+    width: 2rem;
+    height: 2rem;
+    background: url('/help.png') center center no-repeat;
+    background-size: cover;
 }
 .dark-mode header nav .help {
-    border-color: #eee;
+    background-image: url('/help_dark.png');
+    background-color: white;
+    border: 1px solid #fff;
+    border-radius: 50%;
+}
+header nav .options {
+    display: block;
+    width: 2rem;
+    height: 2rem;
+    background: url('/gear_dark.jpg') center center no-repeat;
+    background-size: cover;
+}
+.dark-mode header nav .options {
+    background-image: url('/gear_light.jpg');
 }
 
 header h1 {
