@@ -4,14 +4,17 @@ const { generateGame, makeGuess, isGameSolved } = require('../logic/game')
 const router = express.Router()
 
 router.get('/', (req, res) => {
+    req.session.options = req.session.options || {}
+    const depth = req.session.options.depth || 2
+
     if (typeof(req.query.new) === 'string') {
-        req.session.game = generateGame()
+        req.session.game = generateGame(depth)
         return res.redirect('/')
     }
 
     let game = req.session.game || null
     if (!game) {
-        game = generateGame()
+        game = generateGame(depth)
         req.session.game = game
     }
 
@@ -70,6 +73,14 @@ router.get('/status', (req, res) => {
         guesses: req.session.game.guesses,
         solved: req.session.game.solved || false
     })
+})
+
+router.get('/options', (req, res) => {
+    if (req.query.depth) {
+        req.session.options.depth = Number(req.query.depth) || 2
+    }
+
+    res.json(req.session.options)
 })
 
 router.get('/answer', (req, res) => {

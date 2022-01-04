@@ -12,6 +12,11 @@ header {
     text-align: center;
 }
 
+h3.no-break {
+    display: inline-block;
+    margin-right: 0.5rem;
+}
+
 header nav ul {
     list-style: none;
     display: flex;
@@ -116,10 +121,29 @@ h2.sub-header {
     border-color: #000;
     background-color: #eee;
 }
+.game-options h2 {
+    text-align: center;
+}
+.game-options h3 {
+    font-variant: small-caps;
+    font-size: 1.1rem;
+    margin-bottom: 0;
+}
 .game-options label {
     display: block;
     margin: 0.5em 0;
     font-size: 1.2rem;
+}
+.game-options p {
+    margin: 0;
+}
+.radio-set {
+    display: flex;
+    justify-content: space-evenly;
+}
+.radio-set label {
+    display: block;
+    margin: 0;
 }
 
 

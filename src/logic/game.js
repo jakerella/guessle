@@ -8,10 +8,20 @@ const check = {
     'YAS': 2
 }
 
+const DIFFICULTY_DEPTHS = {
+    1: frequent.length / 3,
+    2: frequent.length / 2,
+    3: frequent.length
+}
+
 module.exports = {
-    generateGame() {
+    generateGame(depth = 2) {
+        const wordDepth = (DIFFICULTY_DEPTHS[depth]) ? DIFFICULTY_DEPTHS[depth] : DIFFICULTY_DEPTHS[2]
+        if (process.env.NODE_ENV === 'development') {
+            console.log(`generating new game with word depth ${depth} (top ${wordDepth} of ${frequent.length} words)`)
+        }
         return {
-            word: frequent[Math.floor(Math.random() * 5000)],
+            word: frequent[Math.floor(Math.random() * wordDepth)],
             guesses: []
         }
     },

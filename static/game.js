@@ -14,11 +14,12 @@ const gameStats = document.querySelector('.stats')
 
 //------------------ Check for options -------------------- //
 const OPTIONS_KEY = 'guessle-options'
-let blankOptions = JSON.stringify({ dark: false, duplicateLetters: true, wordLength: 5 })
+let blankOptions = JSON.stringify({ dark: false, depth: 2, duplicateLetters: true, wordLength: 5 })
 let options = localStorage.getItem(OPTIONS_KEY)
 if (options) {
     try {
-        options = JSON.parse(options)
+        options = { ...JSON.parse(blankOptions), ...JSON.parse(options) }
+        localStorage.setItem(OPTIONS_KEY, JSON.stringify(options))
     } catch(err) {
         console.warn('Bad options:', err.message)
         options = JSON.parse(blankOptions)
@@ -97,6 +98,9 @@ document.querySelector('.reset-stats').addEventListener('click', () => {
 })
 
 gameOptionsEl.querySelector('#dark-mode').addEventListener('change', toggleDarkMode)
+Array.from(gameOptionsEl.querySelectorAll('[name="word-depth"]')).forEach((el) => {
+    el.addEventListener('click', () => { setWordDepth(Number(el.value)) })
+})
 
 
 //------------------ Main event handlers -------------------- //
@@ -118,6 +122,21 @@ function toggleDarkMode() {
         document.body.classList.remove('dark-mode')
     }
     localStorage.setItem(OPTIONS_KEY, JSON.stringify(options))
+}
+
+function setWordDepth(depth) {
+    if (depth !== options.depth) {
+        options.depth = (Number(depth)) ? Number(depth) : options.depth
+        localStorage.setItem(OPTIONS_KEY, JSON.stringify(options))
+        sendServerOptions(options)
+    }
+}
+
+async function sendServerOptions(opts) {
+    const resp = await fetch(`/options?depth=${opts.depth}`)
+    if (resp.status !== 200) {
+        console.warn('Unable to set options on server:', resp.status)
+    }
 }
 
 function handleKeyboardEntry(letter) {
@@ -224,6 +243,7 @@ function initOptions(options) {
         document.body.classList.add('dark-mode')
         gameOptionsEl.querySelector('#dark-mode').setAttribute('checked', 'checked')
     }
+    gameOptionsEl.querySelector(`.word-depth[value="${options.depth}"]`).setAttribute('checked', 'checked')
 }
 
 function setMessage(msg, type='error') {

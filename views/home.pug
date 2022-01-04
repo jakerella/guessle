@@ -59,8 +59,24 @@ block content
         h2.sub-header Game Options
 
         label(for='dark-mode')
+            h3.no-break Dark Mode
             input.dark-mode(type='checkbox', id='dark-mode')
-            | Dark Mode
+        
+        h3 Word Depth
+        p 
+            | How "deep" in the word list do you want to pull words from? (Note, takes effect on the 
+            em next
+            |  word!)
+        aside.radio-set
+            label(for='word-depth-easy')
+                input.word-depth(type='radio', name='word-depth', id='word-depth-easy', value='1')
+                | Easy
+            label(for='word-depth-med')
+                input.word-depth(type='radio', name='word-depth', id='word-depth-med', value='2')
+                | Medium
+            label(for='word-depth-hard')
+                input.word-depth(type='radio', name='word-depth', id='word-depth-hard', value='3')
+                | Hard
         
         aside.actions
             input.close-options.button(type='button', value='Close')
