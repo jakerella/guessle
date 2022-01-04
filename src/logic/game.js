@@ -1,5 +1,6 @@
 const AppError = require('../util/AppError')
-const dict = require('../util/words_5.json')
+const dict = require('../../lists/scrabble_5.json')
+const frequent = require('../../lists/frequent_5.json')
 
 const check = {
     'NOPE': 0,
@@ -10,7 +11,7 @@ const check = {
 module.exports = {
     generateGame() {
         return {
-            word: dict[Math.floor(Math.random() * 5000)],
+            word: frequent[Math.floor(Math.random() * 5000)],
             guesses: []
         }
     },
