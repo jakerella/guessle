@@ -88,7 +88,10 @@ document.querySelector('.new-word').addEventListener('click', async (e) => {
 document.querySelector('.help').addEventListener('click', toggleHelp)
 document.querySelector('.close-help').addEventListener('click', toggleHelp)
 document.querySelector('.options').addEventListener('click', toggleOptions)
-document.querySelector('.close-options').addEventListener('click', toggleOptions)
+document.querySelector('.close-options').addEventListener('click', () => {
+    toggleOptions()
+    sendServerOptions(options)
+})
 
 
 document.querySelector('.reset-stats').addEventListener('click', () => {
