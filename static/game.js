@@ -104,6 +104,7 @@ gameOptionsEl.querySelector('#dark-mode').addEventListener('change', toggleDarkM
 Array.from(gameOptionsEl.querySelectorAll('[name="word-depth"]')).forEach((el) => {
     el.addEventListener('click', () => { setWordDepth(Number(el.value)) })
 })
+gameOptionsEl.querySelector('#dupe-letters').addEventListener('change', toggleDuplicateLetters)
 
 
 //------------------ Main event handlers -------------------- //
@@ -118,7 +119,6 @@ function toggleOptions() {
 
 function toggleDarkMode() {
     options.dark = !options.dark
-    console.log(options);
     if (options.dark) {
         document.body.classList.add('dark-mode')
     } else {
@@ -128,15 +128,19 @@ function toggleDarkMode() {
 }
 
 function setWordDepth(depth) {
-    if (depth !== options.depth) {
-        options.depth = (Number(depth)) ? Number(depth) : options.depth
-        localStorage.setItem(OPTIONS_KEY, JSON.stringify(options))
-        sendServerOptions(options)
-    }
+    options.depth = (Number(depth)) ? Number(depth) : options.depth
+    localStorage.setItem(OPTIONS_KEY, JSON.stringify(options))
+    sendServerOptions(options)
+}
+
+function toggleDuplicateLetters() {
+    options.duplicateLetters = !options.duplicateLetters
+    localStorage.setItem(OPTIONS_KEY, JSON.stringify(options))
+    sendServerOptions(options)
 }
 
 async function sendServerOptions(opts) {
-    const resp = await fetch(`/options?depth=${opts.depth}`)
+    const resp = await fetch(`/options?depth=${opts.depth}&dupeLetters=${opts.duplicateLetters.toString()}`)
     if (resp.status !== 200) {
         console.warn('Unable to set options on server:', resp.status)
     }
@@ -247,6 +251,9 @@ function initOptions(options) {
         gameOptionsEl.querySelector('#dark-mode').setAttribute('checked', 'checked')
     }
     gameOptionsEl.querySelector(`.word-depth[value="${options.depth}"]`).setAttribute('checked', 'checked')
+    if (options.duplicateLetters) {
+        gameOptionsEl.querySelector('#dupe-letters').setAttribute('checked', 'checked')
+    }
 }
 
 function setMessage(msg, type='error') {

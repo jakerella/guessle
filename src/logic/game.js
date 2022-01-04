@@ -15,13 +15,20 @@ const DIFFICULTY_DEPTHS = {
 }
 
 module.exports = {
-    generateGame(depth = 2) {
-        const wordDepth = (DIFFICULTY_DEPTHS[depth]) ? DIFFICULTY_DEPTHS[depth] : DIFFICULTY_DEPTHS[2]
+    generateGame(options) {
+        options.depth = (Number(options.depth)) ? Number(options.depth) : 2
+        const wordDepth = (DIFFICULTY_DEPTHS[options.depth]) ? DIFFICULTY_DEPTHS[options.depth] : DIFFICULTY_DEPTHS[2]
+
+        options.dupeLetters = (typeof(options.dupeLetters) === 'boolean') ? options.dupeLetters : true
+
         if (process.env.NODE_ENV === 'development') {
-            console.log(`generating new game with word depth ${depth} (top ${wordDepth} of ${frequent.length} words)`)
+            console.log(`finding word with depth ${options.depth} (top ${wordDepth} of ${frequent.length} words); dupes? ${options.dupeLetters}`)
         }
+
+        let word = findWord({ depth: wordDepth, dupes: options.dupeLetters })
+
         return {
-            word: frequent[Math.floor(Math.random() * wordDepth)],
+            word,
             guesses: []
         }
     },
@@ -71,4 +78,20 @@ module.exports = {
         const lastGuess = game.guesses[game.guesses.length-1].map((g) => g.letter).join('')
         return lastGuess === game.word
     }
+}
+
+function findWord(options, count=0) {
+    const word = frequent[Math.floor(Math.random() * options.depth)]
+    if (!options.dupes && !/^(?!.*(.).*\1)[a-z]+$/.test(word)) {
+        if (count > 100) {
+            console.warn('Unable to find word with no dupe letters in first 100 tries')
+            return word
+        } else {
+            if (process.env.NODE_ENV === 'development') {
+                console.log(`Skipping word with dupe letters: ${word}`)
+            }
+            return findWord(options, ++count)
+        }
+    }
+    return word
 }

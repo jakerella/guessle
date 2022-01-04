@@ -64,7 +64,9 @@ block content
         
         h3 Word Depth
         p 
-            | How "deep" in the word list do you want to pull words from? (Note, takes effect on the 
+            | How "deep" in the word list do you want to pull words from?
+            br
+            | (Note, this takes effect on the 
             em next
             |  word!)
         aside.radio-set
@@ -77,6 +79,17 @@ block content
             label(for='word-depth-hard')
                 input.word-depth(type='radio', name='word-depth', id='word-depth-hard', value='3')
                 | Hard
+        
+        h3 Duplicate Letters
+        label(for='dupe-letters')
+            | Include Duplicates
+            input.dupe-letters(type='checkbox', id='dupe-letters')
+        p 
+            | This option makes the game easier by excluding words with duplicate letters (like "elder").
+            br
+            | (Note, this takes effect on the 
+            em next
+            |  word!)
         
         aside.actions
             input.close-options.button(type='button', value='Close')

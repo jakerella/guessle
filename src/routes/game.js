@@ -5,16 +5,15 @@ const router = express.Router()
 
 router.get('/', (req, res) => {
     req.session.options = req.session.options || {}
-    const depth = req.session.options.depth || 2
 
     if (typeof(req.query.new) === 'string') {
-        req.session.game = generateGame(depth)
+        req.session.game = generateGame(req.session.options)
         return res.redirect('/')
     }
 
     let game = req.session.game || null
     if (!game) {
-        game = generateGame(depth)
+        game = generateGame(req.session.options)
         req.session.game = game
     }
 
@@ -78,6 +77,11 @@ router.get('/status', (req, res) => {
 router.get('/options', (req, res) => {
     if (req.query.depth) {
         req.session.options.depth = Number(req.query.depth) || 2
+    }
+    if (req.query.dupeLetters && req.query.dupeLetters === 'false') {
+        req.session.options.dupeLetters = false
+    } else {
+        req.session.options.dupeLetters = true
     }
 
     res.json(req.session.options)
