@@ -79,8 +79,6 @@ block content
                     while i < wordLength
                         span.input.letter(id='guess-' + i)
                         - i++
-
-                input.submit-guess(type='button', id='submit-guess', value='guess')
                 
                 p.guess-info.hidden
             
@@ -94,6 +92,8 @@ block content
                 aside.bottom-row
                     each letter in ['z', 'x', 'c', 'v', 'b', 'n', 'm', 'del']
                         span(class='letter letter-' + letter)= letter
+            
+            input.submit-guess(type='button', id='submit-guess', value='guess')
         
         - var hideSolution = 'hidden'
         if solved
