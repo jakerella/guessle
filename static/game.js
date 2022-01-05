@@ -64,7 +64,7 @@ Array.from(document.querySelectorAll('.all-letters .letter')).forEach((letterEl)
 
 document.body.addEventListener('keydown', (e) => {
     if (/^Key([A-Z]$)/.test(e.code)) {
-        handleKeyboardEntry(e.code[3].toLocaleLowerCase())
+        handleKeyboardEntry(e.key.toLocaleLowerCase())
     } else if (e.code === 'Backspace') {
         handleKeyboardEntry('del')
     } else if (e.code === 'Enter') {
