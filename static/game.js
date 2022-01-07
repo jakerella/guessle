@@ -74,7 +74,9 @@ document.body.addEventListener('keydown', (e) => {
     }
 })
 
-submitGuessEl.addEventListener('click', submitGuess)
+if (submitGuessEl) {
+    submitGuessEl.addEventListener('click', submitGuess)
+}
 
 document.querySelector('.new-word').addEventListener('click', async (e) => {
     const quitting = e.target.innerText.includes('give up')
@@ -207,6 +209,7 @@ async function submitGuess() {
                 The word was <a target='_blank' href='https://scrabble.merriam.com/finder/${guess}'>${guess}</a>.`
             solution.classList.remove('hidden')
             document.querySelector('.guess-inputs').classList.add('hidden')
+            submitGuessEl.classList.add('hidden')
             document.querySelector('a.new-word').innerText = 'New Word Please!'
         }
         document.querySelector('.actions').scrollIntoView()
@@ -227,6 +230,7 @@ function addGuess(guess) {
 }
 
 function showLetterHints(guesses) {
+    if (!letterHints.length) { return }
     guesses.forEach((guess) => {
         guess.forEach((guessLetter) => {
             letterHints[guessLetter.letter].classList.add(`check-${guessLetter.check}`)
