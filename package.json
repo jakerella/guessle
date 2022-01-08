@@ -1,13 +1,9 @@
 {
-  "name": "wordle",
+  "name": "guessle",
   "version": "0.1.0",
   "private": true,
-  "description": "Wordle Clone",
+  "description": "A word game based on Wordle",
   "main": "src/index.js",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/jakerella/wordle.git"
-  },
   "author": "@jakerella",
   "license": "MIT",
   "engines": {
@@ -18,6 +14,7 @@
     "watch": "./node_modules/nodemon/bin/nodemon.js -e js,pug,json ."
   },
   "dependencies": {
+    "dotenv": "^10.0.0",
     "express": "^4.17.1",
     "express-session": "^1.17.1",
     "pug": "^3.0.1",

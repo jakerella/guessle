@@ -1,3 +1,5 @@
+require('dotenv').config()
+
 const express = require('express')
 const session = require('express-session')
 const AppError = require('./util/AppError')
@@ -18,9 +20,9 @@ app.use(express.json())
 
 
 const sessionOptions = {
-    secret: process.env.WORDLE_SECRET,
+    secret: process.env.GUESSLE_SESS_SECRET,
     resave: false,
-    name: 'wordle',
+    name: 'guessle',
     saveUninitialized: false
 }
 app.use(session(sessionOptions))
@@ -49,5 +51,5 @@ app.use((err, req, res, next) => {
 
 // here we go...
 app.listen(PORT, () => {
-    console.info(`Wordle app listening at http://localhost:${PORT}`)
+    console.info(`Guessle app listening at http://localhost:${PORT}`)
 })

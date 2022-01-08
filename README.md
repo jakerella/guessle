@@ -30,6 +30,8 @@ Frequent-word list sources:
 
 Want to spin up a version of this game yourself? No problem. There is no database, user management, or other persistence outside of the source code and the dictionary file. Make sure you [download and install Node.js](https://nodejs.org) and then start the server from the root directory using `npm start`
 
+Note that you will need to set some environment variables to get things working properly. You can see those variables in the `.env.example` file. For local development you should create a new file called `.env` and copy the contents of the `.env.example` file into it. Then change the values to match your own.
+
 
 ## Odds and Ends
 
