@@ -230,7 +230,7 @@ function addGuess(guess) {
 }
 
 function showLetterHints(guesses) {
-    if (!letterHints.length) { return }
+    if (!Object.keys(letterHints).length) { return }
     guesses.forEach((guess) => {
         guess.forEach((guessLetter) => {
             letterHints[guessLetter.letter].classList.add(`check-${guessLetter.check}`)
