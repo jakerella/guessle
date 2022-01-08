@@ -125,8 +125,10 @@ block content
             input.submit-guess(type='button', id='submit-guess', value='guess')
         
         - var hideSolution = 'hidden'
+        - var hideGiveup = ''
         if solved
             - hideSolution = ''
+            - hideGiveup = 'hidden'
         p(class='solution-info ' + hideSolution)
             if solved
                 - var suffix = ''
@@ -141,12 +143,17 @@ block content
                 a(target='_blank', href='https://scrabble.merriam.com/finder/' + solution)= solution
                 | .
 
+        p.surrender-info.hidden
+            | You'll get it next time!
+            br
+            | The word was 
+            a.answer(target='_blank', href='https://scrabble.merriam.com/finder/') ???
+            | .
         
-        - var text = 'I give up!'
-        if solved
-            - text = 'New Word Please!'
+
         aside.actions
-            a.new-word.button(href='/?new')= text
+            a(href='#', class='give-up button ' + hideGiveup) I give up!
+            a(href='/?new', class='new-word button ' + hideSolution) New Word Please!
             
         article.stats
             p

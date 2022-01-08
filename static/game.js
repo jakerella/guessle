@@ -79,13 +79,10 @@ if (submitGuessEl) {
     submitGuessEl.addEventListener('click', submitGuess)
 }
 
-document.querySelector('.new-word').addEventListener('click', async (e) => {
-    const quitting = e.target.innerText.includes('give up')
-    if (quitting && !window.confirm('Are you sure you want to give up?')) {
-        e.preventDefault()
-        return false
-    }
-    await newWord(quitting)
+document.querySelector('.give-up').addEventListener('click', async (e) => {
+    e.preventDefault()
+    giveUp()
+    return false
 })
 
 document.querySelector('.help').addEventListener('click', toggleHelp)
@@ -168,16 +165,24 @@ function handleKeyboardEntry(letter) {
     }
 }
 
-async function newWord(giveUp) {
-    if (giveUp) {
+async function giveUp() {
+    if (window.confirm('Are you sure you want to give up?')) {
         stats.played++
         stats.quit++
         localStorage.setItem(STATS_KEY, JSON.stringify(stats))
         const resp = await fetch('/answer')
-        const result = await resp.json()
+        const surrender = document.querySelector('.surrender-info')
         if (resp.status === 200) {
-            window.alert(`No problem! The answer was: ${result.solution}`)
+            const result = await resp.json()
+            const answer = surrender.querySelector('.answer')
+            answer.innerText = result.solution
+            answer.setAttribute('href', answer.getAttribute('href') + result.solution)
+        } else {
+            surrender.innerHTML = `You'll get it next time!<br>Sorry, but I wasn't able to retrieve the answer from the server.`
         }
+        surrender.classList.remove('hidden')
+        document.querySelector('.give-up').classList.add('hidden')
+        document.querySelector('.new-word').classList.remove('hidden')
     }
 }
 
@@ -216,7 +221,8 @@ async function submitGuess() {
             solution.classList.remove('hidden')
             document.querySelector('.guess-inputs').classList.add('hidden')
             submitGuessEl.classList.add('hidden')
-            document.querySelector('a.new-word').innerText = 'New Word Please!'
+            document.querySelector('.give-up').classList.add('hidden')
+            document.querySelector('.new-word').classList.remove('hidden')
         }
         document.querySelector('.actions').scrollIntoView()
 
