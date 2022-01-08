@@ -1,6 +1,7 @@
 require('dotenv').config()
 
 const express = require('express')
+const redis = require('redis')
 const session = require('express-session')
 const AppError = require('./util/AppError')
 
@@ -19,8 +20,17 @@ app.set('view engine', 'pug')
 app.use(express.json())
 
 
+let RedisStore = require('connect-redis')(session)
+let redisSessionClient = redis.createClient(process.env.REDIS_URL)
+redisSessionClient.on('connect', () => { console.log('Connected to Redis for session storage') })
+redisSessionClient.on('error', (err) => {
+    console.error('Unable to maintain redis connection for session storage. Stopping server.')
+    console.error(err)
+    process.exit(1)
+})
 const sessionOptions = {
     secret: process.env.GUESSLE_SESS_SECRET,
+    store: (RedisStore) ? new RedisStore({ client: redisSessionClient }) : null,
     resave: false,
     name: 'guessle',
     saveUninitialized: false

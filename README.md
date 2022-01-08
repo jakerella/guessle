@@ -28,9 +28,13 @@ Frequent-word list sources:
 
 ## Running the Code
 
-Want to spin up a version of this game yourself? No problem. There is no database, user management, or other persistence outside of the source code and the dictionary file. Make sure you [download and install Node.js](https://nodejs.org) and then start the server from the root directory using `npm start`
+Want to spin up a version of this game yourself? No problem. There is no proper database, just one Redis instance for session management. The dictionary file is stored in the source. Make sure you download and install [Node.js](https://nodejs.org) and [Redis](https://redis.io/topics/quickstart) to start.
 
-Note that you will need to set some environment variables to get things working properly. You can see those variables in the `.env.example` file. For local development you should create a new file called `.env` and copy the contents of the `.env.example` file into it. Then change the values to match your own.
+You will need to set some environment variables to get things working properly. You can see those variables in the `.env.example` file. For local development you should create a new file called `.env` and copy the contents of the `.env.example` file into it. Then change the values to match your own.
+
+Finally, start the server from the root directory using `npm start`
+
+If you want to develop, you may want to run `npm run watch` instead so that the app will automatically restart when you change code files.
 
 
 ## Odds and Ends
