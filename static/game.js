@@ -183,6 +183,8 @@ async function giveUp() {
         surrender.classList.remove('hidden')
         document.querySelector('.give-up').classList.add('hidden')
         document.querySelector('.new-word').classList.remove('hidden')
+        document.querySelector('.guess-inputs').classList.add('hidden')
+        submitGuessEl.classList.add('hidden')
     }
 }
 
