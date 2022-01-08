@@ -75,6 +75,10 @@ router.get('/status', (req, res) => {
 })
 
 router.get('/options', (req, res) => {
+    if (req.query.length) {
+        let wordLength = Number(req.query.length)
+        req.session.options.wordLength = (wordLength === 5 || wordLength === 6) ? wordLength : 5
+    }
     if (req.query.depth) {
         req.session.options.depth = Number(req.query.depth) || 2
     }
@@ -82,6 +86,10 @@ router.get('/options', (req, res) => {
         req.session.options.dupeLetters = false
     } else {
         req.session.options.dupeLetters = true
+    }
+
+    if (process.env.NODE_ENV === 'development') {
+        console.log('Set new options to', req.session.options)
     }
 
     res.json(req.session.options)
@@ -104,8 +112,10 @@ router.get('/answer', (req, res) => {
 })
 
 router.get('/dictionary', (req, res) => {
-    const wordLength = req.session.game.word.length || 5
-    res.json(require(`../../lists/scrabble_${wordLength}.json`))
+    res.json({
+        5: require(`../../lists/scrabble_5.json`),
+        6: require(`../../lists/scrabble_6.json`)
+    })
 })
 
 

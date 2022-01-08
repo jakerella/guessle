@@ -103,6 +103,9 @@ document.querySelector('.reset-stats').addEventListener('click', () => {
 })
 
 gameOptionsEl.querySelector('#dark-mode').addEventListener('change', toggleDarkMode)
+Array.from(gameOptionsEl.querySelectorAll('[name="word-length"]')).forEach((el) => {
+    el.addEventListener('click', () => { setWordLength(Number(el.value)) })
+})
 Array.from(gameOptionsEl.querySelectorAll('[name="word-depth"]')).forEach((el) => {
     el.addEventListener('click', () => { setWordDepth(Number(el.value)) })
 })
@@ -129,6 +132,12 @@ function toggleDarkMode() {
     localStorage.setItem(OPTIONS_KEY, JSON.stringify(options))
 }
 
+function setWordLength(length) {
+    options.wordLength = (Number(length)) ? Number(length) : options.length
+    localStorage.setItem(OPTIONS_KEY, JSON.stringify(options))
+    sendServerOptions(options)
+}
+
 function setWordDepth(depth) {
     options.depth = (Number(depth)) ? Number(depth) : options.depth
     localStorage.setItem(OPTIONS_KEY, JSON.stringify(options))
@@ -142,7 +151,7 @@ function toggleDuplicateLetters() {
 }
 
 async function sendServerOptions(opts) {
-    const resp = await fetch(`/options?depth=${opts.depth}&dupeLetters=${opts.duplicateLetters.toString()}`)
+    const resp = await fetch(`/options?length=${opts.wordLength}&depth=${opts.depth}&dupeLetters=${opts.duplicateLetters.toString()}`)
     if (resp.status !== 200) {
         console.warn('Unable to set options on server:', resp.status)
     }
@@ -193,7 +202,7 @@ async function submitGuess() {
     if (guess.length !== inputs.length || !/^[a-z]+$/.test(guess)) {
         return setMessage(`Please enter a ${inputs.length}-letter word.`)
     }
-    if (dictionary && dictionary.length && !dictionary.includes(guess)) {
+    if (dictionary && dictionary[guess.length].length && !dictionary[guess.length].includes(guess)) {
         return setMessage('Sorry, but I don\'t know that word.')
     }
 
@@ -268,6 +277,7 @@ function initOptions(options) {
         document.body.classList.add('dark-mode')
         gameOptionsEl.querySelector('#dark-mode').setAttribute('checked', 'checked')
     }
+    gameOptionsEl.querySelector(`.word-length[value="${options.wordLength}"]`).setAttribute('checked', 'checked')
     gameOptionsEl.querySelector(`.word-depth[value="${options.depth}"]`).setAttribute('checked', 'checked')
     if (options.duplicateLetters) {
         gameOptionsEl.querySelector('#dupe-letters').setAttribute('checked', 'checked')
@@ -295,9 +305,7 @@ async function retrieveDictionary() {
         const resp = await fetch('/dictionary')
         if (resp.status === 200) {
             const dict = await resp.json()
-            if (dict.length) {
-                localStorage.setItem('guessle-dictionary', JSON.stringify(dict))
-            }
+            localStorage.setItem('guessle-dictionary', JSON.stringify(dict))
             return dict
         }
         return null
@@ -319,7 +327,7 @@ async function retrieveDictionary() {
 
     try {
         dictionary = JSON.parse(localStorage.getItem('guessle-dictionary'))
-        if (!dictionary) {
+        if (!Array.isArray(dictionary[5]) || !Array.isArray(dictionary[6])) {
             dictionary = await retrieveDictionary()
         }
     } catch(err) {

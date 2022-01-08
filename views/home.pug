@@ -62,6 +62,21 @@ block content
             h3.no-break Dark Mode
             input.dark-mode(type='checkbox', id='dark-mode')
         
+        h3 Word Size
+        p 
+            | How long should the words be?
+            br
+            | (Note, this takes effect on the 
+            em next
+            |  word!)
+        aside.radio-set
+            label(for='word-length-5')
+                input.word-length(type='radio', name='word-length', id='word-length-5', value='5')
+                | 5-letters
+            label(for='word-length-6')
+                input.word-length(type='radio', name='word-length', id='word-length-6', value='6')
+                | 6-letters
+
         h3 Word Depth
         p 
             | How "deep" in the word list do you want to pull words from?
