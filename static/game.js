@@ -97,9 +97,11 @@ document.querySelector('.close-options').addEventListener('click', () => {
 
 
 document.querySelector('.reset-stats').addEventListener('click', () => {
-    stats = JSON.parse(blankStats)
-    localStorage.setItem(STATS_KEY, JSON.stringify(stats))
-    showStats(stats)
+    if (window.confirm('Are you sure you want to reset your stats?')) {
+        stats = JSON.parse(blankStats)
+        localStorage.setItem(STATS_KEY, JSON.stringify(stats))
+        showStats(stats)
+    }
 })
 
 gameOptionsEl.querySelector('#dark-mode').addEventListener('change', toggleDarkMode)
