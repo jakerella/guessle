@@ -112,13 +112,13 @@ block content
                 p.guess-info.hidden
             
             section.all-letters
-                aside.top-row
+                aside.row.top-row
                     each letter in ['q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p']
                         span(class='letter letter-' + letter)= letter
-                aside.middle-row
+                aside.row.middle-row
                     each letter in ['a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l']
                         span(class='letter letter-' + letter)= letter
-                aside.bottom-row
+                aside.row.bottom-row
                     each letter in ['z', 'x', 'c', 'v', 'b', 'n', 'm', 'del']
                         span(class='letter letter-' + letter)= letter
             

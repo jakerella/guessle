@@ -201,17 +201,23 @@ h2.sub-header {
 }
 
 .all-letters .letter {
-    width: 1.9rem;
-    margin: 0.4rem 0.15rem;
+    width: 1.8rem;
+    margin: 0.4rem 0;
     padding: 0.2rem 0 0.5rem 0;
     min-height: auto;
     cursor: pointer;
 }
+.all-letters .row {
+    display: flex;
+    justify-content: space-between;
+}
 .all-letters .middle-row {
-    margin-left: 1.5rem;
+    margin-left: 1.2rem;
+    margin-right: 1rem;
 }
 .all-letters .bottom-row {
-    margin-left: 2.5rem;
+    margin-left: 2rem;
+    margin-right: 1rem;
 }
 .letter-del {
     background-color: #ddd;
