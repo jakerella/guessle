@@ -1,11 +1,12 @@
 const fs = require('fs')
 
-const scrabble = require('./scrabble_5.json')
+const wordLength = 6
 
+const scrabble = require(`./scrabble_${wordLength}.json`)
 let lists = {
-    wordfrequencyinfo: fs.readFileSync('./freq_wordfrequency-info.txt').toString().split(/\n/),
-    martinweisser: fs.readFileSync('./freq_martinweisser.txt').toString().split(/\n/),
-    norvigngrams: fs.readFileSync('./freq_norvig-ngrams.txt').toString().split(/\n/)
+    wordfrequencyinfo: fs.readFileSync(`./freq_wordfrequency-info_${wordLength}.txt`).toString().split(/\n/),
+    martinweisser: fs.readFileSync(`./freq_martinweisser_${wordLength}.txt`).toString().split(/\n/),
+    norvigngrams: fs.readFileSync(`./freq_norvig-ngrams_${wordLength}.txt`).toString().split(/\n/)
 }
 
 for (source in lists) {
@@ -24,7 +25,7 @@ console.log(`Consolidating norvig into frequent base...`)
 frequent = mergeLists([...frequent], lists.norvigngrams)
 console.log(`Base frequent list now has ${frequent.length} words`)
 
-fs.writeFileSync('./frequent_5.json', JSON.stringify(frequent, null, 2))
+fs.writeFileSync(`./frequent_${wordLength}.json`, JSON.stringify(frequent, null, 2))
 
 function mergeLists(base, addition) {
     let counter = 0
