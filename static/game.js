@@ -10,6 +10,7 @@ gameHelp.style.display = 'none'
 const gameOptionsEl = document.querySelector('.game-options')
 gameOptionsEl.style.display = 'none'
 const gameStats = document.querySelector('.stats')
+let dictionary = null
 
 
 //------------------ Check for options -------------------- //
@@ -185,6 +186,9 @@ async function submitGuess() {
     if (guess.length !== inputs.length || !/^[a-z]+$/.test(guess)) {
         return setMessage(`Please enter a ${inputs.length}-letter word.`)
     }
+    if (dictionary && dictionary.length && !dictionary.includes(guess)) {
+        return setMessage('Sorry, but I don\'t know that word.')
+    }
 
     clearMessage()
     const resp = await fetch(`/guess?w=${guess}`)
@@ -277,15 +281,42 @@ function clearMessage() {
     guessInfo.classList.remove('success')
 }
 
+async function retrieveDictionary() {
+    try {
+        console.info('Retrieving dictionary...')
+        const resp = await fetch('/dictionary')
+        if (resp.status === 200) {
+            const dict = await resp.json()
+            if (dict.length) {
+                localStorage.setItem('guessle-dictionary', JSON.stringify(dict))
+            }
+            return dict
+        }
+        return null
+    } catch(err) {
+        return null
+    }
+}
 
-//------------------ Get current game status from server -------------------- //
+
+//------------------ Some startup actions -------------------- //
 
 ;(async () => {
+    console.info('Getting current game status...')
     const resp = await fetch('/status')
     if (resp.status === 200) {
         const guesses = (await resp.json()).guesses
-        showLetterHints(guesses)
+        showLetterHints(guesses)        
+    }
 
-        
+    try {
+        dictionary = JSON.parse(localStorage.getItem('guessle-dictionary'))
+        if (!dictionary) {
+            dictionary = await retrieveDictionary()
+        }
+    } catch(err) {
+        if (err instanceof SyntaxError) {
+            dictionary = await retrieveDictionary()
+        }
     }
 })()

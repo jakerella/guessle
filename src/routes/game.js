@@ -103,5 +103,10 @@ router.get('/answer', (req, res) => {
     })
 })
 
+router.get('/dictionary', (req, res) => {
+    const wordLength = req.session.game.word.length || 5
+    res.json(require(`../../lists/scrabble_${wordLength}.json`))
+})
+
 
 module.exports = router
