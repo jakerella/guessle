@@ -13,12 +13,8 @@ html(lang='en-US')
     
     body
         header
-            nav
-                ul
-                    li.help
-                    li.options
-            
-            h1 Guessle
+            h1
+                a(href='/') Guessle
 
         main#main-content
             if error
@@ -40,5 +36,4 @@ html(lang='en-US')
                 a(href='https://github.com/jakerella/guessle' target='_blank' title='View the Wordle Clone code on GitHub')
                     | GitHub
             p 
-                | View the game's 
-                a(href='/stats') global stats
+                a(href='/') Back to the game!

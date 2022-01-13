@@ -7,6 +7,7 @@ const AppError = require('./util/AppError')
 
 // All the routes
 const game = require('./routes/game')
+const stats = require('./routes/stats')
 
 // env vars and other config
 const PORT = process.env['PORT'] || 80
@@ -38,7 +39,9 @@ const sessionOptions = {
 app.use(session(sessionOptions))
 
 
+app.use('/stats', stats)
 app.use('/', game)
+
 
 // 404 catcher
 app.use((req, res, next) => {

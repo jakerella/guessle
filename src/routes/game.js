@@ -1,5 +1,6 @@
 const express = require('express')
 const { generateGame, makeGuess, isGameSolved } = require('../logic/game')
+const { incrementStats, addNewStat } = require('../util/stats')
 
 const router = express.Router()
 
@@ -33,7 +34,7 @@ router.get('/', (req, res) => {
     })
 })
 
-router.get('/guess', (req, res) => {
+router.get('/guess', async (req, res) => {
     if (!req.session.game) {
         res.status(400)
         return res.json({ status: 400, message: 'There is no active game.' })
@@ -54,6 +55,14 @@ router.get('/guess', (req, res) => {
     req.session.game.guesses.push(guess)
     const solved = isGameSolved(req.session.game)
     req.session.game.solved = solved
+    if (solved) {
+        const stats = await incrementStats(['gamesPlayed', 'gamesWon'])
+        let totalGuessAvg = req.session.game.guesses.length
+        if (stats.guessAverage) {
+            totalGuessAvg = Math.round(((stats.guessAverage + totalGuessAvg) / 2) * 10) / 10
+        }
+        await addNewStat('guessAverage', totalGuessAvg)
+    }
 
     res.json({
         guesses: req.session.game.guesses,
@@ -95,7 +104,7 @@ router.get('/options', (req, res) => {
     res.json(req.session.options)
 })
 
-router.get('/answer', (req, res) => {
+router.get('/answer', async (req, res) => {
     if (!req.session.game) {
         res.status(400)
         return res.json({ status: 400, message: 'There is no active game.' })
@@ -104,6 +113,7 @@ router.get('/answer', (req, res) => {
     const solution = req.session.game.word
     const guesses = req.session.game.guesses
     req.session.game = null
+    await incrementStats(['gamesPlayed', 'gamesQuit'])
 
     res.json({
         guesses,

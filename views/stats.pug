@@ -1,0 +1,72 @@
+extends partials/simple.pug
+
+block content
+
+    article.game-stats
+        h2.sub-header Game Stats
+        p 
+            | Below are the global game statistics for Guessle, and your own stats as well!
+        
+        p
+            | (Global Stats collected since 
+            span.start-time= stats.startTime
+            | .)
+        
+        h3 Global Stats
+        table.global-stats
+            tbody
+                tr 
+                    th Games Played
+                    td.games-played= stats.gamesPlayed || 0
+                tr 
+                    th Games Won
+                    td
+                        - var winPercent = 0
+                        if stats.gamesPlayed > 0
+                            - winPercent = Math.round(((stats.gamesWon || 0) / stats.gamesPlayed) * 100)
+                        span.games-won= stats.gamesWon || 0
+                        |  (
+                        span.games-won-percent= winPercent
+                        | %)
+                tr 
+                    th Average Guesses
+                    td.guess-average= stats.guessAverage || 0
+                tr 
+                    th Games Given Up
+                    td 
+                        - var quitPercent = 0
+                        if stats.gamesPlayed > 0
+                            - quitPercent = Math.round(((stats.gamesQuit || 0) / stats.gamesPlayed) * 100)
+                        span.games-quit= stats.gamesQuit || 0
+                        |  (
+                        span.games-quit-percent= quitPercent
+                        | %)
+
+        h3 Player Stats
+        table.player-stats
+            tbody
+                tr 
+                    th Games Played
+                    td.games-played 0
+                tr 
+                    th Games Won
+                    td
+                        span.games-won 0
+                        |  (
+                        span.games-won-percent 0
+                        | %)
+                tr 
+                    th Average Guesses
+                    td.guess-average 0
+                tr 
+                    th Games Given Up
+                    td 
+                        span.games-quit 0
+                        |  (
+                        span.games-quit-percent 0
+                        | %)
+        
+        aside.actions
+            input.reset-stats.button(type='button', value='Reset My Stats')
+
+    script(src='stats.js')

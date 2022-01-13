@@ -57,6 +57,13 @@ header h1 {
     font-size: 1.8rem;
     margin-top: 0;
 }
+header h1 a:link, header h1 a:hover, header h1 a:active, header h1 a:visited {
+    text-decoration: none;
+    color: #000;
+}
+.dark-mode header h1 a:link, .dark-mode header h1 a:hover, .dark-mode header h1 a:active, .dark-mode header h1 a:visited {
+    color: #eee;
+}
 
 .game-board {
     max-width: 25rem;
@@ -124,7 +131,7 @@ h2.sub-header {
 .game-options h2 {
     text-align: center;
 }
-.game-options h3 {
+h3 {
     font-variant: small-caps;
     font-size: 1.1rem;
     margin-bottom: 0;
@@ -246,6 +253,19 @@ h2.sub-header {
 .actions {
     margin-top: 1rem;
     text-align: center;
+}
+
+
+.game-stats table {
+    width: 90%;
+    margin: 1rem auto;
+}
+.game-stats th {
+    text-align: right;
+    width: 40%;
+}
+.game-stats td {
+    padding-left: 0.5rem;
 }
 
 
