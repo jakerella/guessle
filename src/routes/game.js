@@ -1,6 +1,6 @@
 const express = require('express')
 const { generateGame, makeGuess, isGameSolved } = require('../logic/game')
-const { incrementStats, addNewStat } = require('../util/stats')
+const { incrementStats, addNewStat, addValueToList } = require('../util/stats')
 
 const router = express.Router()
 
@@ -62,6 +62,9 @@ router.get('/guess', async (req, res) => {
             totalGuessAvg = Math.round(((stats.guessAverage + totalGuessAvg) / 2) * 10) / 10
         }
         await addNewStat('guessAverage', totalGuessAvg)
+        if (req.ip) {
+            await addValueToList('players', req.ip, true)
+        }
     }
 
     res.json({
@@ -114,6 +117,9 @@ router.get('/answer', async (req, res) => {
     const guesses = req.session.game.guesses
     req.session.game = null
     await incrementStats(['gamesPlayed', 'gamesQuit'])
+    if (req.ip) {
+        await addValueToList('players', req.ip, true)
+    }
 
     res.json({
         guesses,

@@ -41,6 +41,9 @@ block content
                         |  (
                         span.games-quit-percent= quitPercent
                         | %)
+                tr
+                    th Total Player Count 
+                    td.player-count= (stats.players && stats.players.length) || '?'
 
         h3 Player Stats
         table.player-stats

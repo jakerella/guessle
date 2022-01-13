@@ -124,9 +124,38 @@ const incrementStats = async (keys) => {
     return stats
 }
 
+const addValueToList = async (key, value=null, unique=false) => {
+    if (DISABLE_STATS) { return null }
+    if (!key) { throw new Error('No key provided for the stat item to add to') }
+    
+    const cache = cacheClient()
+    if (!cache) {
+        console.warn('No cache client, unable to add new value to stat')
+        return null
+    }
+
+    const stats = await getStats()
+    if (!stats) {
+        throw new Error('Unable to get current stats object to add value to item')
+    }
+
+    if (!Array.isArray(stats[key])) {
+        if (stats[key]) { throw new Error('That key already exists in the stats and is not an array, unable to add a value to it') }
+        stats[key] = []
+    }
+
+    if (!unique || !stats[key].includes(value)) {
+        stats[key].push(value)
+    }
+    await cache.setAsync(STATS_KEY, JSON.stringify(stats))
+
+    return stats
+}
+
 module.exports = {
     resetAllStats,
     getStats,
     addNewStat,
-    incrementStats
+    incrementStats,
+    addValueToList
 }
