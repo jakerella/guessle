@@ -9,7 +9,7 @@ try {
 }
 
 
-const historyElements = gameHistory.map((game) => {
+const historyElements = gameHistory.reverse().map((game) => {
     const [ guessString, answer ] = game.split('|')
     const guesses = guessString.split('>')
     const gameResult = (/^[2]+$/.test(guesses[guesses.length-1][1])) ? 'game-win' : 'game-loss'
