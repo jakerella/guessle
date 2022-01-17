@@ -15,7 +15,8 @@ router.get('/', async (req, res) => {
         title: 'Game Stats',
         error: null,
         info: null,
-        stats
+        stats,
+        disabled: process.env.DISABLE_STATS === 'true' || false
     })
 })
 

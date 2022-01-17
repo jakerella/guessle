@@ -55,7 +55,7 @@ router.get('/guess', async (req, res) => {
     req.session.game.guesses.push(guess)
     const solved = isGameSolved(req.session.game)
     req.session.game.solved = solved
-    if (solved) {
+    if (solved && process.env.DISABLE_STATS !== 'true') {
         const stats = await incrementStats(['gamesPlayed', 'gamesWon'])
         let totalGuessAvg = req.session.game.guesses.length
         if (stats.guessAverage) {
@@ -116,9 +116,12 @@ router.get('/answer', async (req, res) => {
     const solution = req.session.game.word
     const guesses = req.session.game.guesses
     req.session.game = null
-    await incrementStats(['gamesPlayed', 'gamesQuit'])
-    if (req.ip) {
-        await addValueToList('players', req.ip, true)
+    
+    if (process.env.DISABLE_STATS !== 'true') {
+        await incrementStats(['gamesPlayed', 'gamesQuit'])
+        if (req.ip) {
+            await addValueToList('players', req.ip, true)
+        }
     }
 
     res.json({
