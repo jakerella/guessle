@@ -27,11 +27,13 @@ const cacheClient = () => {
     _client.setexAsync = promisify(_client.setex).bind(_client)
 
     _client.on('error', function(err) {
-        console.error('ERROR from Redis: %s', err)
+        console.error('ERROR from Redis:', err.message)
     })
 
     _client.on('end', function(err) {
-        console.info('Client connection to redis server closed. %s', err)
+        if (err) {
+            console.info('Client connection to redis server closed with error:', err.message)
+        }
         _client = null
     })
 
