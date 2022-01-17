@@ -55,6 +55,26 @@ if (stats) {
 showStats(stats)
 
 
+//------------------ Check for game history -------------------- //
+const HISTORY_KEY = 'guessle-history'
+let gameHistory = localStorage.getItem(HISTORY_KEY)
+if (gameHistory) {
+    try {
+        gameHistory = JSON.parse(gameHistory)
+        if (!Array.isArray(gameHistory)) {
+            throw new Error('Game history is not an array, so unfortunately it is getting reset: ' + JSON.stringify(gameHistory))
+        }
+    } catch(err) {
+        console.warn('Bad history:', err.message)
+        gameHistory = []
+        localStorage.setItem(HISTORY_KEY, '[]')
+    }
+} else {
+    gameHistory = []
+    localStorage.setItem(HISTORY_KEY, '[]')
+}
+
+
 //------------------ Set up game listeners -------------------- //
 
 const letterHints = {}
@@ -94,7 +114,8 @@ document.querySelector('.close-options').addEventListener('click', () => {
 })
 
 
-document.querySelector('.reset-stats').addEventListener('click', () => {
+document.querySelector('.reset-stats').addEventListener('click', (e) => {
+    e.preventDefault()
     if (window.confirm('Are you sure you want to reset your stats?')) {
         stats = JSON.parse(blankStats)
         localStorage.setItem(STATS_KEY, JSON.stringify(stats))
@@ -179,10 +200,14 @@ async function giveUp() {
         stats.played++
         stats.quit++
         localStorage.setItem(STATS_KEY, JSON.stringify(stats))
+
         const resp = await fetch('/answer')
         const surrender = document.querySelector('.surrender-info')
         if (resp.status === 200) {
             const result = await resp.json()
+
+            addHistoryEntry(result.guesses, result.solution)
+
             const answer = surrender.querySelector('.answer')
             answer.innerText = result.solution
             answer.setAttribute('href', answer.getAttribute('href') + result.solution)
@@ -223,6 +248,8 @@ async function submitGuess() {
             stats.won++
             localStorage.setItem(STATS_KEY, JSON.stringify(stats))
             showStats(stats)
+
+            addHistoryEntry(result.guesses)
 
             const solution = document.querySelector('.solution-info')
             solution.innerHTML = `Congratulations! You solved this Guessle in 
@@ -270,6 +297,16 @@ function showStats(stats) {
         gameStats.querySelector('.win-percent').innerText = Math.round((stats.won / stats.played) * 100)
         gameStats.querySelector('.quit-percent').innerText = Math.round((stats.quit / stats.played) * 100)
     }
+}
+
+function addHistoryEntry(guesses, solution) {
+    const answer = (solution) ? solution : guesses[guesses.length-1].map((gl) => gl.letter).join('')
+    const guessChecks = guesses.map((guess) => {
+        return guess.map((gl) => gl.check).join('')
+    })
+
+    gameHistory.push(`${guessChecks.join('>')}|${answer}`)
+    localStorage.setItem(HISTORY_KEY, JSON.stringify(gameHistory))
 }
 
 function initOptions(options) {

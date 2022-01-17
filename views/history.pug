@@ -1,0 +1,12 @@
+extends partials/simple.pug
+
+block content
+
+    article.game-stats
+        header.title-with-button
+            h2.sub-header Game History
+            a.clear-history.button(href='#') Clear History
+
+        ul.history
+
+        script(src='history.js')

@@ -88,13 +88,13 @@ header h1 a:link, header h1 a:hover, header h1 a:active, header h1 a:visited {
     min-height: 2.3rem;
 }
 
-.letter.check-0 {
+.check-0 {
     background-color: #bbb;
 }
-.letter.check-1 {
+.check-1 {
     background-color: #cc5;
 }
-.letter.check-2 {
+.check-2 {
     background-color: #9c9;
 }
 
@@ -118,6 +118,12 @@ h2.sub-header {
     font-size: 1.3rem;
     margin: 0;
 }
+.title-with-button {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
 .game-help .letter {
     min-height: auto;
     padding: 0.1rem 0.2rem;
@@ -267,6 +273,59 @@ h3 {
 .game-stats td {
     padding-left: 0.5rem;
 }
+
+ul.history {
+    list-style: none;
+    margin: 0 auto;
+    padding: 0;
+    width: 90%;
+}
+ul.history .game {
+    margin: 1rem 0;
+}
+
+ul.history .game header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+}
+ul.history .game h3 {
+    background: url('red-x.png') no-repeat;
+    background-size: contain;
+    background-position: left;
+    padding-left: 2rem;
+    font-size: 1.3rem;
+}
+ul.history .game-win h3 {
+    background-image: url('green-check.png');
+}
+ul.history .game h3, ul.history .game p {
+    margin: 0;
+}
+ul.history .guesses {
+    list-style: none;
+    padding: 0;
+}
+ul.history .guesses li {
+    margin: 0 auto;
+    width: 60%;
+    display: flex;
+    justify-content: space-evenly;
+}
+ul.history .guesses span {
+    flex-grow: 1;
+    margin: 0.2rem;
+    border-radius: 3px;
+    height: 1rem;
+}
+.toggle-guesses::before {
+    content: '▼';
+}
+.showing-guesses .toggle-guesses::before {
+    content: '▲';
+}
+
 
 
 a.button, a.button:hover, a.button:active, a.button:visited {

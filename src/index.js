@@ -8,6 +8,7 @@ const AppError = require('./util/AppError')
 // All the routes
 const game = require('./routes/game')
 const stats = require('./routes/stats')
+const history = require('./routes/history')
 
 // env vars and other config
 const PORT = process.env['PORT'] || 80
@@ -40,6 +41,7 @@ app.use(session(sessionOptions))
 
 
 app.use('/stats', stats)
+app.use('/history', history)
 app.use('/', game)
 
 

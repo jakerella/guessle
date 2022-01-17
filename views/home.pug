@@ -193,6 +193,8 @@ block content
                 | %).
             
             aside.actions
-                input.reset-stats.button(type='button', value='Reset Stats')
+                a(href='/history', class='game-history button') Game History
+                a(href='#', class='reset-stats button') Reset Stats
+                //- input.reset-stats.button(type='button', value='Reset Stats')
 
     script(src='game.js')
