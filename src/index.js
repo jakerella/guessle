@@ -53,7 +53,11 @@ app.use((req, res, next) => {
 })
 app.use((err, req, res, next) => {
     if (!err.status || err.status > 499) {
-        console.error(err)
+        if (process.env.NODE_ENV === 'development') {
+            console.error(err)
+        } else {
+            console.error(err.message)
+        }
     }
     
     res.status(err.status || 500)
