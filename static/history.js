@@ -42,8 +42,14 @@ if (gameHistory.length) {
 }
 
 document.querySelector('ul.history').addEventListener('click', (e) => {
-    if (e.target.parentNode.classList.contains('game-header')) {
-        toggleGameGuesses(e.target.parentNode.parentNode)
+    if (e.target.classList.contains('game-header') ||
+        e.target.classList.contains('toggle-guesses') ||
+        e.target.parentNode.classList.contains('game-header')) {
+        let node = e.target.parentNode
+        while(!node.classList.contains('game')) {
+            node = node.parentNode
+        }
+        toggleGameGuesses(node)
     }
 })
 
