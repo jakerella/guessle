@@ -327,6 +327,21 @@ ul.history .guesses span {
 }
 
 
+.alert {
+    margin: 0 auto;
+    width: 90%;
+    border: 1px solid #55c;
+    border-radius: 0.5rem;
+    background: #ccf;
+    color: #000 !important;
+    padding: 0 1rem;
+}
+.alert-error {
+    border-color: #c55;
+    background: #fcc;
+}
+
+
 
 a.button, a.button:hover, a.button:active, a.button:visited {
     color: #000;

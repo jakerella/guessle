@@ -1,5 +1,18 @@
 extends partials/simple.pug
 
 block content
+    h2 There was an error...
+
+    article.alert.alert-error
+        p= errorMessage
+
+    p
+        | Sorry about the error. If you think this is a bug in the system, you can report it on the 
+        a(href='https://github.com/jakerella/guessle/issues', target='_blank') GitHub repository
+        | !
+    
     p 
-        | There was an error
+        | You can try to 
+        a(href='/') return to the game
+        | , but if that doesn't work, you may want to try again later.
+
