@@ -1,5 +1,6 @@
 const express = require('express')
 const { generateGame, makeGuess, isGameSolved } = require('../logic/game')
+const { getClient } = require('../util/cache')
 const { incrementStats, addNewStat, addValueToList } = require('../util/stats')
 
 const router = express.Router()
@@ -45,6 +46,11 @@ router.get('/guess', async (req, res) => {
         return res.json({ status: 400, message: `Please guess a ${req.session.game.word.length}-letter word.` })
     }
 
+    req.cacheClient = getClient(process.env.REDIS_URL)
+    if (!req.cacheClient) {
+        return next(new AppError('No cache client present in session', 500))
+    }
+
     let guess = null
     try {
         guess = makeGuess(req.session.game, req.query.w)
@@ -56,14 +62,14 @@ router.get('/guess', async (req, res) => {
     const solved = isGameSolved(req.session.game)
     req.session.game.solved = solved
     if (solved && process.env.DISABLE_STATS !== 'true') {
-        const stats = await incrementStats(['gamesPlayed', 'gamesWon'])
+        const stats = await incrementStats(req.cacheClient, ['gamesPlayed', 'gamesWon'])
         let totalGuessAvg = req.session.game.guesses.length
         if (stats.guessAverage) {
             totalGuessAvg = Math.round(((stats.guessAverage + totalGuessAvg) / 2) * 10) / 10
         }
-        await addNewStat('guessAverage', totalGuessAvg)
+        await addNewStat(req.cacheClient, 'guessAverage', totalGuessAvg)
         if (req.ip) {
-            await addValueToList('players', req.ip, true)
+            await addValueToList(req.cacheClient, 'players', req.ip, true)
         }
     }
 
@@ -72,6 +78,10 @@ router.get('/guess', async (req, res) => {
         guess,
         solved
     })
+
+    try {
+        await req.cacheClient.quitAsync()
+    } catch(err) { /* Don't care because I would just log this, and we log it in the cache util */ }
 })
 
 router.get('/status', (req, res) => {
@@ -113,14 +123,19 @@ router.get('/answer', async (req, res) => {
         return res.json({ status: 400, message: 'There is no active game.' })
     }
 
+    req.cacheClient = getClient(process.env.REDIS_URL)
+    if (!req.cacheClient) {
+        return next(new AppError('No cache client present in session', 500))
+    }
+
     const solution = req.session.game.word
     const guesses = req.session.game.guesses
     req.session.game = null
     
     if (process.env.DISABLE_STATS !== 'true') {
-        await incrementStats(['gamesPlayed', 'gamesQuit'])
+        await incrementStats(req.cacheClient, ['gamesPlayed', 'gamesQuit'])
         if (req.ip) {
-            await addValueToList('players', req.ip, true)
+            await addValueToList(req.cacheClient, 'players', req.ip, true)
         }
     }
 
@@ -128,6 +143,10 @@ router.get('/answer', async (req, res) => {
         guesses,
         solution
     })
+
+    try {
+        await req.cacheClient.quitAsync()
+    } catch(err) { /* Don't care because I would just log this, and we log it in the cache util */ }
 })
 
 router.get('/dictionary', (req, res) => {

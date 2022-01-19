@@ -47,17 +47,34 @@ app.use('/history', history)
 app.use('/', game)  // the game is mounted to the root route, so needs to be last
 
 
+// Kill any leftover cache connections
+app.use(async (req, res, next) => {
+    if (req.cacheClient) {
+        try {
+            await req.cacheClient.quitAsync()
+        } catch(err) { /* Don't care because I would just log this, and we log it in the cache util */ }
+    }
+    next()
+})
+
+
 // 404 catcher, then error catchall
 app.use((req, res, next) => {
     next(new AppError('Sorry, but I could not find that page.', 404))
 })
-app.use((err, req, res, next) => {
+app.use(async (err, req, res, next) => {
     if (!err.status || err.status > 499) {
         if (process.env.NODE_ENV === 'development') {
             console.error(err)
         } else {
             console.error(err.message)
         }
+    }
+
+    if (req.cacheClient) {
+        try {
+            await req.cacheClient.quitAsync()
+        } catch(err) { /* Don't care because I would just log this, and we log it in the cache util */ }
     }
     
     res.status(err.status || 500)

@@ -1,6 +1,3 @@
-const { promisify } = require('util')
-const redis = require('redis')
-
 const DISABLE_STATS = process.env.DISABLE_STATS === 'true'
 if (DISABLE_STATS) {
     console.warn('Statistics collection disabled')
@@ -9,41 +6,10 @@ if (DISABLE_STATS) {
 }
 
 const STATS_KEY = process.env.STATS_KEY || 'GUESSLE_STATS'
-let _client = null
 
-const cacheClient = () => {
-    if (_client) { return _client }
-    
-    if (!process.env.REDIS_URL) {
-        console.warn('WARNING: No Redis URL provided, caching will not occur.')
-        return null
-    }
-
-    _client = redis.createClient(process.env.REDIS_URL)
-
-    _client.getAsync = promisify(_client.get).bind(_client)
-    _client.delAsync = promisify(_client.del).bind(_client)
-    _client.setAsync = promisify(_client.set).bind(_client)
-    _client.setexAsync = promisify(_client.setex).bind(_client)
-
-    _client.on('error', function(err) {
-        console.error('ERROR from Redis:', err.message)
-    })
-
-    _client.on('end', function(err) {
-        if (err) {
-            console.info('Client connection to redis server closed with error:', err.message)
-        }
-        _client = null
-    })
-
-    return _client
-}
-
-const getStats = async () => {
+const getStats = async (cache) => {
     if (DISABLE_STATS) { return null }
     
-    const cache = cacheClient()
     if (!cache) {
         console.warn('No cache client, unable to retrieve stats')
         return null
@@ -51,15 +17,14 @@ const getStats = async () => {
 
     let stats = JSON.parse(await cache.getAsync(STATS_KEY))
     if (stats === null) {
-        stats = await resetAllStats()
+        stats = await resetAllStats(cache)
     }
     return stats
 }
 
-const resetAllStats = async () => {
+const resetAllStats = async (cache) => {
     if (DISABLE_STATS) { return null }
     
-    const cache = cacheClient()
     if (!cache) {
         console.warn('No cache client, unable to reset stats')
         return null
@@ -76,17 +41,16 @@ const resetAllStats = async () => {
     return stats
 }
 
-const addNewStat = async (key, value=null) => {
+const addNewStat = async (cache, key, value=null) => {
     if (DISABLE_STATS) { return null }
     if (!key) { throw new Error('No key provided for the new stat item') }
     
-    const cache = cacheClient()
     if (!cache) {
         console.warn('No cache client, unable to add new stat')
         return null
     }
 
-    const stats = await getStats()
+    const stats = await getStats(cache)
     if (!stats) {
         throw new Error('Unable to get current stats object to add new item')
     }
@@ -97,17 +61,16 @@ const addNewStat = async (key, value=null) => {
     return stats
 }
 
-const incrementStats = async (keys) => {
+const incrementStats = async (cache, keys) => {
     if (DISABLE_STATS) { return null }
     if (!Array.isArray(keys)) { throw new Error('No array of keys provided to increment stats') }
     
-    const cache = cacheClient()
     if (!cache) {
         console.warn('No cache client, unable to increment stat')
         return null
     }
 
-    const stats = await getStats()
+    const stats = await getStats(cache)
     if (!stats) {
         throw new Error('Unable to get current stats object to increment item')
     }
@@ -126,17 +89,16 @@ const incrementStats = async (keys) => {
     return stats
 }
 
-const addValueToList = async (key, value=null, unique=false) => {
+const addValueToList = async (cache, key, value=null, unique=false) => {
     if (DISABLE_STATS) { return null }
     if (!key) { throw new Error('No key provided for the stat item to add to') }
     
-    const cache = cacheClient()
     if (!cache) {
         console.warn('No cache client, unable to add new value to stat')
         return null
     }
 
-    const stats = await getStats()
+    const stats = await getStats(cache)
     if (!stats) {
         throw new Error('Unable to get current stats object to add value to item')
     }
