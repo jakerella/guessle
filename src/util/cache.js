@@ -23,16 +23,17 @@ const getClient = (url) => {
         }
     })
 
-    client.on('error', function(err) {
+    client.on('error', async function(err) {
         if (process.env.NODE_ENV === 'development') {
             console.error('ERROR from Redis:', err)
         } else {
             console.error('ERROR from Redis:', err.message)
         }
+        await client.quitAsync()
         client = null
     })
 
-    client.on('end', function(err) {
+    client.on('end', async function(err) {
         if (err) {
             if (process.env.NODE_ENV === 'development') {
                 console.warn('Client connection to redis server closed with error:', err)
@@ -42,6 +43,7 @@ const getClient = (url) => {
         } else if (process.env.NODE_ENV === 'development') {
             console.log('Redis connection closed.')
         }
+        await client.quitAsync()
         client = null
     })
 

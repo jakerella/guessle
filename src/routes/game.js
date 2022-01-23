@@ -62,14 +62,21 @@ router.get('/guess', async (req, res) => {
     const solved = isGameSolved(req.session.game)
     req.session.game.solved = solved
     if (solved && process.env.DISABLE_STATS !== 'true') {
-        const stats = await incrementStats(req.cacheClient, ['gamesPlayed', 'gamesWon'])
-        let totalGuessAvg = req.session.game.guesses.length
-        if (stats.guessAverage) {
-            totalGuessAvg = Math.round(((stats.guessAverage + totalGuessAvg) / 2) * 10) / 10
-        }
-        await addNewStat(req.cacheClient, 'guessAverage', totalGuessAvg)
-        if (req.ip) {
-            await addValueToList(req.cacheClient, 'players', req.ip, true)
+        try {
+            const stats = await incrementStats(req.cacheClient, ['gamesPlayed', 'gamesWon'])
+            if (stats) {
+                let totalGuessAvg = req.session.game.guesses.length
+                if (stats.guessAverage) {
+                    totalGuessAvg = Math.round(((stats.guessAverage + totalGuessAvg) / 2) * 10) / 10
+                }
+                await addNewStat(req.cacheClient, 'guessAverage', totalGuessAvg)
+                if (req.ip) {
+                    await addValueToList(req.cacheClient, 'players', req.ip, true)
+                }
+            }
+        } catch(err) {
+            console.warn('Unable to write global stats (win):', err.message)
+            // Let this error go, we just won't write this win's result to global stats
         }
     }
 
@@ -133,9 +140,14 @@ router.get('/answer', async (req, res) => {
     req.session.game = null
     
     if (process.env.DISABLE_STATS !== 'true') {
-        await incrementStats(req.cacheClient, ['gamesPlayed', 'gamesQuit'])
-        if (req.ip) {
-            await addValueToList(req.cacheClient, 'players', req.ip, true)
+        try {
+            await incrementStats(req.cacheClient, ['gamesPlayed', 'gamesQuit'])
+            if (req.ip) {
+                await addValueToList(req.cacheClient, 'players', req.ip, true)
+            }
+        } catch(err) {
+            console.warn('Unable to write global stats (give up):', err.message)
+            // Let this error go, we just won't write this win's result to global stats
         }
     }
 
