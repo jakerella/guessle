@@ -86,6 +86,7 @@ header h1 a:link, header h1 a:hover, header h1 a:active, header h1 a:visited {
     margin: 0 0.3rem;
     text-align: center;
     min-height: 2.3rem;
+    position: relative;
 }
 
 .check-0 {
@@ -97,6 +98,49 @@ header h1 a:link, header h1 a:hover, header h1 a:active, header h1 a:visited {
 .check-2 {
     background-color: #9c9;
 }
+
+
+.accessible-markers .letter.check-0::before {
+    display: block;
+    content: "✗";
+    position: absolute;
+    top: -0.1rem;
+    right: 0.1rem;
+    font-size: 1rem;
+    color: #000;
+}
+.accessible-markers .all-letters .letter.check-0::before {
+    font-size: 0.7rem;
+    top: -0.1rem;
+}
+.accessible-markers .letter.check-1::before {
+    display: block;
+    content: "?";
+    position: absolute;
+    top: 0;
+    right: 0.2rem;
+    font-size: 1rem;
+    color: #000;
+}
+.accessible-markers .all-letters .letter.check-1::before {
+    font-size: 0.7rem;
+    top: 0;
+    right: 0.1rem;
+}
+.accessible-markers .letter.check-2::before {
+    display: block;
+    content: "✓";
+    position: absolute;
+    top: 0;
+    right: 0.1rem;
+    font-size: 1rem;
+    color: #000;
+}
+.accessible-markers .all-letters .letter.check-2::before {
+    font-size: 0.7rem;
+    top: -0.1rem;
+}
+
 
 .dark-mode .letter.check-0, .dark-mode .letter.check-1, .dark-mode .letter.check-2 {
     color: #333;

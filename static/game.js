@@ -15,7 +15,7 @@ let dictionary = null
 
 //------------------ Check for options -------------------- //
 const OPTIONS_KEY = 'guessle-options'
-let blankOptions = JSON.stringify({ dark: false, depth: 2, duplicateLetters: true, wordLength: 5 })
+let blankOptions = JSON.stringify({ dark: false, depth: 2, duplicateLetters: true, wordLength: 5, accessibleMarkers: false })
 let options = localStorage.getItem(OPTIONS_KEY)
 if (options) {
     try {
@@ -131,6 +131,7 @@ Array.from(gameOptionsEl.querySelectorAll('[name="word-depth"]')).forEach((el) =
     el.addEventListener('click', () => { setWordDepth(Number(el.value)) })
 })
 gameOptionsEl.querySelector('#dupe-letters').addEventListener('change', toggleDuplicateLetters)
+gameOptionsEl.querySelector('#accessible-markers').addEventListener('change', toggleAccessibleMarkers)
 
 
 //------------------ Main event handlers -------------------- //
@@ -170,6 +171,17 @@ function toggleDuplicateLetters() {
     localStorage.setItem(OPTIONS_KEY, JSON.stringify(options))
     sendServerOptions(options)
 }
+
+function toggleAccessibleMarkers() {
+    options.accessibleMarkers = !options.accessibleMarkers
+    if (options.accessibleMarkers) {
+        document.body.classList.add('accessible-markers')
+    } else {
+        document.body.classList.remove('accessible-markers')
+    }
+    localStorage.setItem(OPTIONS_KEY, JSON.stringify(options))
+}
+
 
 async function sendServerOptions(opts) {
     const resp = await fetch(`/options?length=${opts.wordLength}&depth=${opts.depth}&dupeLetters=${opts.duplicateLetters.toString()}`)
@@ -318,6 +330,10 @@ function initOptions(options) {
     gameOptionsEl.querySelector(`.word-depth[value="${options.depth}"]`).setAttribute('checked', 'checked')
     if (options.duplicateLetters) {
         gameOptionsEl.querySelector('#dupe-letters').setAttribute('checked', 'checked')
+    }
+    if (options.accessibleMarkers) {
+        document.body.classList.add('accessible-markers')
+        gameOptionsEl.querySelector('#accessible-markers').setAttribute('checked', 'checked')
     }
 }
 

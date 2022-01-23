@@ -100,11 +100,18 @@ block content
             | Include Duplicates
             input.dupe-letters(type='checkbox', id='dupe-letters')
         p 
-            | This option makes the game easier by excluding words with duplicate letters (like "elder").
+            | This option changes the game's difficulty by including (or excluding) words with duplicate letters (like "elder").
             br
             | (Note, this takes effect on the 
             em next
             |  word!)
+        
+        h3 Guess Markers
+        label(for='accessible-markers')
+            | Add non-color markers
+            input.accessible-markers(type='checkbox', id='accessible-markers')
+        p 
+            | This option adds more accessible markers to guess letters (non-color based).
         
         aside.actions
             input.close-options.button(type='button', value='Close')
