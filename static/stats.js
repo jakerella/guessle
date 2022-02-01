@@ -11,32 +11,45 @@ const startDate = new Date(Number(startTimeEl.innerText))
 startTimeEl.setAttribute('data-starttime', startTimeEl.innerText)
 startTimeEl.innerText = startDate.toLocaleDateString()
 
+const HISTORY_KEY = 'guessle-history'
+
+document.querySelector('.clear-history').addEventListener('click', (e) => {
+    e.preventDefault()
+    if (window.confirm('Are you sure you want to clear your game history and reset your stats?')) {
+        localStorage.setItem(HISTORY_KEY, '[]')
+        updateStats()
+    }
+})
+
+updateStats()
 
 // ------------------ Add players stats from localstorage -------------------- //
 
-try {
-    const history = JSON.parse(localStorage.getItem('guessle-history'))
-    if (history) {
-        const stats = { played: 0, won: 0, quit: 0, guessCounts: [] }
+function updateStats() {
+    try {
+        const history = JSON.parse(localStorage.getItem(HISTORY_KEY))
+        if (history) {
+            const stats = { played: 0, won: 0, quit: 0, guessCounts: [] }
 
-        history.forEach((game) => {
-            stats.played++
-            const guesses = game.split('|')[0].split('>')
-            stats.guessCounts.push(guesses.length)
-            if (/^[2]+$/.test(guesses.pop())) { stats.won++ } else { stats.quit++ }
-        })
+            history.forEach((game) => {
+                stats.played++
+                const guesses = game.split('|')[0].split('>')
+                stats.guessCounts.push(guesses.length)
+                if (/^[2]+$/.test(guesses.pop())) { stats.won++ } else { stats.quit++ }
+            })
 
-        const playerStatsEl = document.querySelector('.player-stats')
-        playerStatsEl.querySelector('.games-played').innerText = stats.played
-        playerStatsEl.querySelector('.games-won').innerText = stats.won
-        playerStatsEl.querySelector('.games-quit').innerText = stats.quit
-        if (stats.played > 0) {
-            playerStatsEl.querySelector('.games-won-percent').innerText = Math.round((stats.won / stats.played) * 100)
-            playerStatsEl.querySelector('.games-quit-percent').innerText = Math.round((stats.quit / stats.played) * 100)
-            playerStatsEl.querySelector('.guess-average').innerText = Math.round(((stats.guessCounts.reduce((t, v) => t+v, 0)) / stats.guessCounts.length) * 10) / 10
+            const playerStatsEl = document.querySelector('.player-stats')
+            playerStatsEl.querySelector('.games-played').innerText = stats.played
+            playerStatsEl.querySelector('.games-won').innerText = stats.won
+            playerStatsEl.querySelector('.games-quit').innerText = stats.quit
+            if (stats.played > 0) {
+                playerStatsEl.querySelector('.games-won-percent').innerText = Math.round((stats.won / stats.played) * 100)
+                playerStatsEl.querySelector('.games-quit-percent').innerText = Math.round((stats.quit / stats.played) * 100)
+                playerStatsEl.querySelector('.guess-average').innerText = Math.round(((stats.guessCounts.reduce((t, v) => t+v, 0)) / stats.guessCounts.length) * 10) / 10
+            }
         }
-    }
 
-} catch(err) {
-    console.warn('Bad player history:', err.message)
+    } catch(err) {
+        console.warn('Bad player history:', err.message)
+    }
 }
