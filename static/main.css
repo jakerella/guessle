@@ -306,17 +306,43 @@ h3 {
 }
 
 
-.game-stats table {
+table.stats-list {
     width: 90%;
     margin: 1rem auto;
 }
-.game-stats th {
+table.stats-list th {
     text-align: right;
     width: 65%;
 }
-.game-stats td {
+table.stats-list td {
     padding-left: 0.5rem;
 }
+
+table.stat-chart {
+    margin: 0 auto;
+}
+table.stat-chart th, table.stat-chart td {
+    text-align: center;
+}
+table.stat-chart .label {
+    text-align: right   ;
+}
+table.stat-chart .tally td {
+    width: 1.2rem;
+    vertical-align: bottom;
+}
+table.stat-chart .stat-bar {
+    display: block;
+    width: 50%;
+    margin: 0 auto;
+}
+.player-chart.stat-chart .stat-bar {
+    background-color: #66d;
+}
+.global-chart.stat-chart .stat-bar {
+    background-color: #6d6;
+}
+
 
 ul.history {
     list-style: none;

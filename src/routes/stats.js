@@ -13,10 +13,10 @@ router.get('/', async (req, res, next) => {
 
     const stats = await getStats(req.cacheClient)
     stats[PLAYERS_KEY] = await getStats(req.cacheClient, PLAYERS_KEY) || []
-    const guessCounts = await getStats(req.cacheClient, GUESS_COUNTS_KEY) || []
+    stats.guessCounts = await getStats(req.cacheClient, GUESS_COUNTS_KEY) || []
 
-    if (guessCounts.length) {
-        stats.guessAverage = Math.round(((guessCounts.reduce((t, v) => t+v, 0)) / guessCounts.length) * 10) / 10
+    if (stats.guessCounts.length) {
+        stats.guessAverage = Math.round(((stats.guessCounts.reduce((t, v) => t+v, 0)) / stats.guessCounts.length) * 10) / 10
     } else {
         stats.guessAverage = 0
     }

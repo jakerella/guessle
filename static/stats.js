@@ -22,6 +22,8 @@ document.querySelector('.clear-history').addEventListener('click', (e) => {
 })
 
 updateStats()
+makeGuessChart(globalGuessCounts, document.querySelector('.global-chart.stat-chart'))
+
 
 // ------------------ Add players stats from localstorage -------------------- //
 
@@ -47,9 +49,27 @@ function updateStats() {
                 playerStatsEl.querySelector('.games-quit-percent').innerText = Math.round((stats.quit / stats.played) * 100)
                 playerStatsEl.querySelector('.guess-average').innerText = Math.round(((stats.guessCounts.reduce((t, v) => t+v, 0)) / stats.guessCounts.length) * 10) / 10
             }
+
+            makeGuessChart(stats.guessCounts, document.querySelector('.player-chart.stat-chart'))
         }
 
     } catch(err) {
         console.warn('Bad player history:', err.message)
     }
+}
+
+
+function makeGuessChart(guessCounts, chartEl) {
+    const countMap = guessCounts.reduce((acc, count) => {
+        acc[count] = (acc[count]) ? acc[count] + 1 : 1
+        return acc
+    }, [])
+
+    countMap.forEach((tally, guess) => {
+        const share = Math.round((tally / guessCounts.length) * 100)
+        chartEl.querySelector(`.count-${guess}`).innerHTML = `<span class='stat-bar' style='height:${share}px;'></span>`
+    })
+
+    console.log(countMap)
+
 }

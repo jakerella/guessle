@@ -2,6 +2,10 @@ extends partials/simple.pug
 
 block content
 
+    script.
+        // Feed the global guess counts into the client-side JS
+        const globalGuessCounts = [#{stats.guessCounts}];
+
     article.game-stats
         h2.sub-header Game Stats
         
@@ -18,7 +22,7 @@ block content
                 | .)
             
             h3 Global Stats
-            table.global-stats
+            table.global-stats.stats-list
                 tbody
                     tr 
                         th Games Played
@@ -53,9 +57,38 @@ block content
                     tr
                         th Total Player Count 
                         td.player-count= (stats.players && stats.players.length) || '?'
+                
+            table.global-chart.stat-chart
+                tbody
+                    tr.tally
+                        th.label %
+                        td.count-1 
+                        td.count-2 
+                        td.count-3 
+                        td.count-4 
+                        td.count-5 
+                        td.count-6 
+                        td.count-7 
+                        td.count-8 
+                        td.count-9 
+                        td.count-more 
+                tfoot
+                    tr
+                        th.label Guesses
+                        th 1
+                        th 2
+                        th 3
+                        th 4
+                        th 5
+                        th 6
+                        th 7
+                        th 8
+                        th 9
+                        th 10+
+                    
 
             h3 Player Stats
-            table.player-stats
+            table.player-stats.stats-list
                 tbody
                     tr 
                         th Games Played
@@ -77,6 +110,34 @@ block content
                             |  (
                             span.games-quit-percent 0
                             | %)
+            
+            table.player-chart.stat-chart
+                tbody
+                    tr.tally
+                        th.label %
+                        td.count-1 
+                        td.count-2 
+                        td.count-3 
+                        td.count-4 
+                        td.count-5 
+                        td.count-6 
+                        td.count-7 
+                        td.count-8 
+                        td.count-9 
+                        td.count-more 
+                tfoot
+                    tr
+                        th.label Guesses
+                        th 1
+                        th 2
+                        th 3
+                        th 4
+                        th 5
+                        th 6
+                        th 7
+                        th 8
+                        th 9
+                        th 10+
             
             aside.actions
                 input.clear-history.button(type='button', value='Clear My History')
