@@ -1,7 +1,9 @@
 
 // ------------------ Check for dark mode -------------------- //
-let options = localStorage.getItem('guessle-options')
-if (options && options.dark) { document.body.classList.add('dark-mode') }
+try {
+    const options = JSON.parse(localStorage.getItem('guessle-options'))
+    if (options && options.dark) { document.body.classList.add('dark-mode') }
+} catch(e) { /* don't care... */ }
 
 
 // ------------------ Get the history from storage -------------------- //
