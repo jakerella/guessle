@@ -6,8 +6,10 @@ if (DISABLE_STATS) {
 }
 
 const STATS_KEY = process.env.STATS_KEY || 'GUESSLE_STATS'
+const PLAYERS_KEY = 'players'
+const GUESS_COUNTS_KEY = 'guessCounts'
 
-const getStats = async (cache) => {
+const getStats = async (cache, key) => {
     if (DISABLE_STATS) { return null }
     
     if (!cache) {
@@ -15,8 +17,10 @@ const getStats = async (cache) => {
         return null
     }
 
-    let stats = JSON.parse(await cache.getAsync(STATS_KEY))
-    if (stats === null) {
+    if (!key) { key = STATS_KEY }
+
+    let stats = JSON.parse(await cache.getAsync(key))
+    if (stats === null && key === STATS_KEY) {
         stats = await resetAllStats(cache)
     }
     return stats
@@ -34,9 +38,10 @@ const resetAllStats = async (cache) => {
         startTime: Date.now(),
         gamesPlayed: 0,
         gamesWon: 0,
-        gamesQuit: 0,
-        guessAverage: 0
+        gamesQuit: 0
     }
+    await cache.setAsync(PLAYERS_KEY, '[]')
+    await cache.setAsync(GUESS_COUNTS_KEY, '[]')
     await cache.setAsync(STATS_KEY, JSON.stringify(stats))
     return stats
 }
@@ -75,7 +80,7 @@ const incrementStats = async (cache, keys) => {
         throw new Error('Unable to get current stats object to increment item')
     }
 
-    const newValues = keys.map((key) => {
+    keys.map((key) => {
         if (!stats[key]) { stats[key] = 0 }
         if (!typeof(stats[key]) === 'number') {
             throw new Error(`Stat to increment is not a number (${key})`)
@@ -98,22 +103,19 @@ const addValueToList = async (cache, key, value=null, unique=false) => {
         return null
     }
 
-    const stats = await getStats(cache)
-    if (!stats) {
-        throw new Error('Unable to get current stats object to add value to item')
+    let statList = JSON.parse(await cache.getAsync(key))
+    if (statList === null) { statList = [] }
+    
+    if (!Array.isArray(statList)) {
+        throw new Error('That key already exists in the cache and is not an array, unable to add a value to it')
     }
 
-    if (!Array.isArray(stats[key])) {
-        if (stats[key]) { throw new Error('That key already exists in the stats and is not an array, unable to add a value to it') }
-        stats[key] = []
+    if (!unique || !statList.includes(value)) {
+        statList.push(value)
     }
+    await cache.setAsync(key, JSON.stringify(statList))
 
-    if (!unique || !stats[key].includes(value)) {
-        stats[key].push(value)
-    }
-    await cache.setAsync(STATS_KEY, JSON.stringify(stats))
-
-    return stats
+    return statList
 }
 
 module.exports = {
@@ -121,5 +123,7 @@ module.exports = {
     getStats,
     addNewStat,
     incrementStats,
-    addValueToList
+    addValueToList,
+    PLAYERS_KEY,
+    GUESS_COUNTS_KEY
 }

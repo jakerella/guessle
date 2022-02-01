@@ -1,4 +1,10 @@
 
+// ------------------ Check for dark mode -------------------- //
+let options = localStorage.getItem('guessle-options')
+if (options && options.dark) { document.body.classList.add('dark-mode') }
+
+
+// ------------------ Get the history from storage -------------------- //
 const HISTORY_KEY = 'guessle-history'
 let gameHistory = []
 try {

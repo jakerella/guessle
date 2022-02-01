@@ -35,7 +35,11 @@ block content
                             | %)
                     tr 
                         th Average Guesses
-                        td.guess-average= stats.guessAverage || 0
+                        td.guess-average
+                            if stats.gamesPlayed > 0
+                                = stats.guessAverage
+                            else
+                                | 0
                     tr 
                         th Games Given Up
                         td 

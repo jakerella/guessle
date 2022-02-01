@@ -1,7 +1,7 @@
 const express = require('express')
 const { generateGame, makeGuess, isGameSolved } = require('../logic/game')
 const { getClient } = require('../util/cache')
-const { incrementStats, addNewStat, addValueToList } = require('../util/stats')
+const { incrementStats, addValueToList, GUESS_COUNTS_KEY, PLAYERS_KEY } = require('../util/stats')
 
 const router = express.Router()
 
@@ -65,13 +65,9 @@ router.get('/guess', async (req, res) => {
         try {
             const stats = await incrementStats(req.cacheClient, ['gamesPlayed', 'gamesWon'])
             if (stats) {
-                let totalGuessAvg = req.session.game.guesses.length
-                if (stats.guessAverage) {
-                    totalGuessAvg = Math.round(((stats.guessAverage + totalGuessAvg) / 2) * 10) / 10
-                }
-                await addNewStat(req.cacheClient, 'guessAverage', totalGuessAvg)
+                await addValueToList(req.cacheClient, GUESS_COUNTS_KEY, req.session.game.guesses.length)
                 if (req.ip) {
-                    await addValueToList(req.cacheClient, 'players', req.ip, true)
+                    await addValueToList(req.cacheClient, PLAYERS_KEY, req.ip, true)
                 }
             }
         } catch(err) {
@@ -143,7 +139,7 @@ router.get('/answer', async (req, res) => {
         try {
             await incrementStats(req.cacheClient, ['gamesPlayed', 'gamesQuit'])
             if (req.ip) {
-                await addValueToList(req.cacheClient, 'players', req.ip, true)
+                await addValueToList(req.cacheClient, PLAYERS_KEY, req.ip, true)
             }
         } catch(err) {
             console.warn('Unable to write global stats (give up):', err.message)

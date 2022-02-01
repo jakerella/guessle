@@ -8,7 +8,9 @@ const getClient = (url) => {
         return null
     }
 
-    console.log('Getting new redis client...');
+    if (process.env.NODE_ENV === 'development') {
+        console.log('Getting new redis client...')
+    }
 
     let client = redis.createClient(url)
 
