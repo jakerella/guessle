@@ -1,7 +1,8 @@
 
+const HISTORY_KEY = 'guessle-history'
 let gameHistory = []
 try {
-    gameHistory = JSON.parse(localStorage.getItem('guessle-history'))
+    gameHistory = JSON.parse(localStorage.getItem(HISTORY_KEY))
     if (!Array.isArray(gameHistory)) { gameHistory = [] }
 } catch(err) {
     console.warn('Bad history:', err.message)
@@ -55,8 +56,8 @@ document.querySelector('ul.history').addEventListener('click', (e) => {
 
 document.querySelector('.clear-history').addEventListener('click', (e) => {
     e.preventDefault()
-    if (window.confirm('Are you sure you want to clear your game history?')) {
-        localStorage.setItem('guessle-history', '[]')
+    if (window.confirm('Are you sure you want to clear your game history and reset your stats?')) {
+        localStorage.setItem(HISTORY_KEY, '[]')
         document.querySelector('ul.history').innerHTML = '<li>(no history yet)</li>'
     }
 })

@@ -33,28 +33,6 @@ if (options) {
 initOptions(options)
 
 
-//------------------ Check for stats -------------------- //
-const STATS_KEY = 'guessle-stats'
-let blankStats = JSON.stringify({ played: 0, won: 0, quit: 0, guessAvg: 0 })
-let stats = localStorage.getItem(STATS_KEY)
-if (stats) {
-    try {
-        stats = JSON.parse(stats)
-        if (stats.played !== (stats.won + stats.quit)) {
-            throw new Error('Stats look out of balance, so unfortunately they are getting reset: ' + JSON.stringify(stats))
-        }
-    } catch(err) {
-        console.warn('Bad stats:', err.message)
-        stats = JSON.parse(blankStats)
-        localStorage.setItem(STATS_KEY, JSON.stringify(stats))
-    }
-} else {
-    stats = JSON.parse(blankStats)
-    localStorage.setItem(STATS_KEY, JSON.stringify(stats))
-}
-showStats(stats)
-
-
 //------------------ Check for game history -------------------- //
 const HISTORY_KEY = 'guessle-history'
 let gameHistory = localStorage.getItem(HISTORY_KEY)
@@ -73,6 +51,7 @@ if (gameHistory) {
     gameHistory = []
     localStorage.setItem(HISTORY_KEY, '[]')
 }
+updateStats()
 
 
 //------------------ Set up game listeners -------------------- //
@@ -114,12 +93,12 @@ document.querySelector('.close-options').addEventListener('click', () => {
 })
 
 
-document.querySelector('.reset-stats').addEventListener('click', (e) => {
+document.querySelector('.clear-history').addEventListener('click', (e) => {
     e.preventDefault()
-    if (window.confirm('Are you sure you want to reset your stats?')) {
-        stats = JSON.parse(blankStats)
-        localStorage.setItem(STATS_KEY, JSON.stringify(stats))
-        showStats(stats)
+    if (window.confirm('Are you sure you want to clear your game history and reset your stats?')) {
+        gameHistory = []
+        localStorage.setItem(HISTORY_KEY, '[]')
+        updateStats()
     }
 })
 
@@ -209,16 +188,13 @@ function handleKeyboardEntry(letter) {
 
 async function giveUp() {
     if (window.confirm('Are you sure you want to give up?')) {
-        stats.played++
-        stats.quit++
-        localStorage.setItem(STATS_KEY, JSON.stringify(stats))
-
         const resp = await fetch('/answer')
         const surrender = document.querySelector('.surrender-info')
         if (resp.status === 200) {
             const result = await resp.json()
 
             addHistoryEntry(result.guesses, result.solution)
+            updateStats()
 
             const answer = surrender.querySelector('.answer')
             answer.innerText = result.solution
@@ -251,17 +227,8 @@ async function submitGuess() {
         showLetterHints(result.guesses)
         inputs.forEach((el) => { el.innerText = '' })
         if (result.solved) {
-            if (stats.guessAvg) {
-                stats.guessAvg = Math.round(((stats.guessAvg + result.guesses.length) / 2) * 10) / 10
-            } else {
-                stats.guessAvg = result.guesses.length
-            }
-            stats.played++
-            stats.won++
-            localStorage.setItem(STATS_KEY, JSON.stringify(stats))
-            showStats(stats)
-
             addHistoryEntry(result.guesses)
+            updateStats()
 
             const solution = document.querySelector('.solution-info')
             solution.innerHTML = `Congratulations! You solved this Guessle in 
@@ -300,14 +267,27 @@ function showLetterHints(guesses) {
     })
 }
 
-function showStats(stats) {
+function updateStats() {
+    const stats = { played: 0, won: 0, quit: 0, guessCounts: [] }
+
+    gameHistory.forEach((game) => {
+        stats.played++
+        const guesses = game.split('|')[0].split('>')
+        stats.guessCounts.push(guesses.length)
+        if (/^[2]+$/.test(guesses.pop())) { stats.won++ } else { stats.quit++ }
+    })
+
     gameStats.querySelector('.play-count').innerText = stats.played
     gameStats.querySelector('.win-count').innerText = stats.won
     gameStats.querySelector('.quit-count').innerText = stats.quit
-    gameStats.querySelector('.guess-avg').innerText = stats.guessAvg
     if (stats.played > 0) {
         gameStats.querySelector('.win-percent').innerText = Math.round((stats.won / stats.played) * 100)
         gameStats.querySelector('.quit-percent').innerText = Math.round((stats.quit / stats.played) * 100)
+        gameStats.querySelector('.guess-avg').innerText = Math.round(((stats.guessCounts.reduce((t, v) => t+v, 0)) / stats.guessCounts.length) * 10) / 10
+    } else {
+        gameStats.querySelector('.win-percent').innerText = 0
+        gameStats.querySelector('.quit-percent').innerText = 0
+        gameStats.querySelector('.guess-avg').innerText = 0
     }
 }
 
