@@ -95,6 +95,7 @@ router.get('/status', (req, res) => {
 
     res.json({
         guesses: req.session.game.guesses,
+        wordLength: req.session.game.word.length,
         solved: req.session.game.solved || false
     })
 })

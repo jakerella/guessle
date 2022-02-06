@@ -4,7 +4,7 @@ const gameBoard = document.querySelector('.game-board')
 const pastGuesses = document.querySelector('.past-guesses')
 const inputs = Array.from(document.querySelectorAll('.input.letter'))
 const submitGuessEl = document.querySelector('#submit-guess')
-const guessInfo = document.querySelector('.guess-info')
+const guessInfo = document.querySelector('#guess-info')
 const gameHelp = document.querySelector('.game-help')
 gameHelp.style.display = 'none'
 const gameOptionsEl = document.querySelector('.game-options')
@@ -15,7 +15,7 @@ let dictionary = null
 
 //------------------ Check for options -------------------- //
 const OPTIONS_KEY = 'guessle-options'
-let blankOptions = JSON.stringify({ dark: false, depth: 2, duplicateLetters: true, wordLength: 5, accessibleMarkers: false })
+let blankOptions = JSON.stringify({ dark: false, depth: 2, duplicateLetters: true, wordLength: 5, accessibleMarkers: false, openers: {} })
 let options = localStorage.getItem(OPTIONS_KEY)
 if (options) {
     try {
@@ -63,19 +63,25 @@ Array.from(document.querySelectorAll('.all-letters .letter')).forEach((letterEl)
 })
 
 document.body.addEventListener('keydown', (e) => {
-    if (/^Key([A-Z]$)/.test(e.code)) {
-        handleKeyboardEntry(e.key.toLocaleLowerCase())
-    } else if (e.code === 'Backspace') {
-        handleKeyboardEntry('del')
-    } else if (e.code === 'Enter') {
-        submitGuess()
-    } else if (e.code === 'Slash') {  // "?" is Shift-Slash, but we'll just capture either
-        toggleHelp()
+    if (e.target.nodeName !== 'INPUT') {
+        if (/^Key([A-Z]$)/.test(e.code)) {
+            handleKeyboardEntry(e.key.toLocaleLowerCase())
+        } else if (e.code === 'Backspace') {
+            handleKeyboardEntry('del')
+        } else if (e.code === 'Enter') {
+            const guess = inputs.map((el) => el.innerText.trim().toLowerCase()).filter((l) => !!l).join('')
+            submitGuess(guess)
+        } else if (e.code === 'Slash') {  // "?" is Shift-Slash, but we'll just capture either
+            toggleHelp()
+        }
     }
 })
 
 if (submitGuessEl) {
-    submitGuessEl.addEventListener('click', submitGuess)
+    submitGuessEl.addEventListener('click', () => {
+        const guess = inputs.map((el) => el.innerText.trim().toLowerCase()).filter((l) => !!l).join('')
+        submitGuess(guess)
+    })
 }
 
 document.querySelector('.give-up').addEventListener('click', async (e) => {
@@ -103,6 +109,8 @@ document.querySelector('.clear-history').addEventListener('click', (e) => {
 })
 
 gameOptionsEl.querySelector('#dark-mode').addEventListener('change', toggleDarkMode)
+gameOptionsEl.querySelector('#opener-5').addEventListener('blur', setDefaultOpener)
+gameOptionsEl.querySelector('#opener-6').addEventListener('blur', setDefaultOpener)
 Array.from(gameOptionsEl.querySelectorAll('[name="word-length"]')).forEach((el) => {
     el.addEventListener('click', () => { setWordLength(Number(el.value)) })
 })
@@ -130,6 +138,11 @@ function toggleDarkMode() {
     } else {
         document.body.classList.remove('dark-mode')
     }
+    localStorage.setItem(OPTIONS_KEY, JSON.stringify(options))
+}
+
+function setDefaultOpener(e) {
+    options.openers[e.target.id.split('-')[1]] = e.target.value
     localStorage.setItem(OPTIONS_KEY, JSON.stringify(options))
 }
 
@@ -175,7 +188,7 @@ function handleKeyboardEntry(letter) {
         inputs.forEach((el) => {
             if (el.innerText) { lastEl = el }
         })
-        lastEl.innerText = ''
+        if (lastEl) { lastEl.innerText = '' }
     } else {
         for (let i=0; i<inputs.length; ++i) {
             if (!inputs[i].innerText) {
@@ -210,8 +223,7 @@ async function giveUp() {
     }
 }
 
-async function submitGuess() {
-    const guess = inputs.map((el) => el.innerText.trim().toLowerCase()).filter((l) => !!l).join('')
+async function submitGuess(guess) {
     if (guess.length !== inputs.length || !/^[a-z]+$/.test(guess)) {
         return setMessage(`Please enter a ${inputs.length}-letter word.`)
     }
@@ -306,6 +318,8 @@ function initOptions(options) {
         document.body.classList.add('dark-mode')
         gameOptionsEl.querySelector('#dark-mode').setAttribute('checked', 'checked')
     }
+    gameOptionsEl.querySelector('#opener-5').value = options.openers['5'] || ''
+    gameOptionsEl.querySelector('#opener-6').value = options.openers['6'] || ''
     gameOptionsEl.querySelector(`.word-length[value="${options.wordLength}"]`).setAttribute('checked', 'checked')
     gameOptionsEl.querySelector(`.word-depth[value="${options.depth}"]`).setAttribute('checked', 'checked')
     if (options.duplicateLetters) {
@@ -354,8 +368,16 @@ async function retrieveDictionary() {
     console.info('Getting current game status...')
     const resp = await fetch('/status')
     if (resp.status === 200) {
-        const guesses = (await resp.json()).guesses
-        showLetterHints(guesses)        
+        const game = await resp.json()
+
+        const defaultOpener = options.openers[`${game.wordLength}`]
+        if (game.guesses.length === 0 && defaultOpener && defaultOpener.length === game.wordLength) {
+            console.log(`No guesses, using default ${game.wordLength}-letter opener:`, defaultOpener)
+            await submitGuess(defaultOpener)
+            document.querySelector('.used-default-opener').classList.remove('hidden')
+        } else if (game.guesses.length > 0) {
+            showLetterHints(game.guesses)
+        }
     }
 
     try {

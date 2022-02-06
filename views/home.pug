@@ -55,12 +55,27 @@ block content
         aside.actions
             input.close-help.button(type='button', value='Close')
 
-    article.game-options.info-block
+    form.game-options.info-block
         h2.sub-header Game Options
 
         label(for='dark-mode')
             h3.no-break Dark Mode
             input.dark-mode(type='checkbox', id='dark-mode')
+        
+        
+        h3 Default Opener
+        p 
+            | If set, every game will begin with this word 
+            strong already guessed.
+            br
+            | (Leave blank to not use a default opener.)
+        
+        label(for='opener-5')
+            | 5-letters: 
+            input.default-opener(type='text', name='opener-5', id='opener-5', maxlength='5', pattern='^($|[a-zA-Z]{5}$)')
+        label(for='opener-6')
+            | 6-letters: 
+            input.default-opener(type='text', name='opener-6', id='opener-6', maxlength='6', pattern='^($|[a-zA-Z]{6}$)')
         
         h3 Word Size
         p 
@@ -117,6 +132,9 @@ block content
             input.close-options.button(type='button', value='Close')
 
     article.game-board 
+        p.guess-info.used-default-opener.hidden
+            | Your default opener was used!
+
         section.past-guesses
             each guess in guesses
                 aside.guess
@@ -131,7 +149,7 @@ block content
                         span.input.letter(id='guess-' + i)
                         - i++
                 
-                p.guess-info.hidden
+                p#guess-info.guess-info.hidden
             
             section.all-letters
                 aside.row.top-row

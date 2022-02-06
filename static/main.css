@@ -194,6 +194,10 @@ h3 {
 .game-options p {
     margin: 0;
 }
+.game-options input:invalid {
+    border: 2px solid #d77;
+    background-color: #fdd;
+}
 .radio-set {
     display: flex;
     justify-content: space-evenly;
@@ -228,9 +232,9 @@ h3 {
 
 .guess-info {
     padding: 0.5em 1em;
-    border: 1px solid #66d;
+    border: 1px solid #33d;
     border-radius: 0.3rem;
-    background-color: #ddf;
+    background-color: #eef;
     width: 80%;
     margin: 1rem auto;
     text-align: center;
