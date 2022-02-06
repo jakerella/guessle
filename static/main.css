@@ -333,7 +333,7 @@ table.stat-chart .tally td {
 }
 table.stat-chart .stat-bar {
     display: block;
-    width: 50%;
+    width: 0.6rem;
     margin: 0 auto;
 }
 .player-chart.stat-chart .stat-bar {

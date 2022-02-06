@@ -65,11 +65,15 @@ function makeGuessChart(guessCounts, chartEl) {
         return acc
     }, [])
 
+    let tenPlusTally = 0
     countMap.forEach((tally, guess) => {
-        const share = Math.round((tally / guessCounts.length) * 100)
-        chartEl.querySelector(`.count-${guess}`).innerHTML = `<span class='stat-bar' style='height:${share}px;'></span>`
+        if (guess < 10) {
+            const share = Math.round((tally / guessCounts.length) * 100)
+            chartEl.querySelector(`.count-${guess}`).innerHTML = `<span class='stat-bar' style='height:${share}px;'></span>`
+        } else {
+            tenPlusTally += tally
+        }
     })
-
-    console.log(countMap)
-
+    const tenPlusShare = Math.round((tenPlusTally / guessCounts.length) * 100)
+    chartEl.querySelector(`.count-more`).innerHTML = `<span class='stat-bar' style='height:${tenPlusShare}px;'></span>`
 }
