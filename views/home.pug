@@ -144,10 +144,6 @@ block content
         if !solved
             section.guess-inputs
                 aside.guess
-                    - var i = 0;
-                    while i < wordLength
-                        span.input.letter(id='guess-' + i)
-                        - i++
                 
                 p#guess-info.guess-info.hidden
             
@@ -221,4 +217,7 @@ block content
                 a.game-history.button(href='/history') Game History
                 a.clear-history.button(href='#') Clear History
 
+    script.
+        // Feed the server options into the client-side JS
+        window.serverOptions = JSON.parse( '#{options}'.replace(/&quot;/g, '"') );
     script(src='game.js')

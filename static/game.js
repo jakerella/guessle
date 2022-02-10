@@ -2,7 +2,6 @@
 //------------------ Cache some DOM elements -------------------- //
 const gameBoard = document.querySelector('.game-board')
 const pastGuesses = document.querySelector('.past-guesses')
-const inputs = Array.from(document.querySelectorAll('.input.letter'))
 const submitGuessEl = document.querySelector('#submit-guess')
 const guessInfo = document.querySelector('#guess-info')
 const gameHelp = document.querySelector('.game-help')
@@ -10,6 +9,9 @@ gameHelp.style.display = 'none'
 const gameOptionsEl = document.querySelector('.game-options')
 gameOptionsEl.style.display = 'none'
 const gameStats = document.querySelector('.stats')
+
+// These will be set later in the startup actions (very bottom)
+let inputs = []
 let dictionary = null
 
 
@@ -365,8 +367,23 @@ async function retrieveDictionary() {
 //------------------ Some startup actions -------------------- //
 
 ;(async () => {
+    // Ensure the server has the latest user options
+    if (!window.serverOptions) {
+        await sendServerOptions(options)
+    }
+
+    // Build the letter inputs
+    const letters = []
+    const l = options.wordLength || 5
+    for (let i=0; i<l; ++i) {
+        letters.push(`<span class="input letter" id="guess-${i}"></span>`)
+    }
+    document.querySelector('.guess-inputs .guess').innerHTML = letters.join('')
+    // set the global value for use in other places
+    inputs = Array.from(document.querySelectorAll('.input.letter'))
+
     console.info('Getting current game status...')
-    const resp = await fetch('/status')
+    const resp = await fetch('/status?generate=true')
     if (resp.status === 200) {
         const game = await resp.json()
 
@@ -378,6 +395,8 @@ async function retrieveDictionary() {
         } else if (game.guesses.length > 0) {
             showLetterHints(game.guesses)
         }
+    } else if (resp.status === 404) {
+
     }
 
     try {

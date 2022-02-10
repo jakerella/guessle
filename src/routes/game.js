@@ -6,18 +6,14 @@ const { incrementStats, addValueToList, GUESS_COUNTS_KEY, PLAYERS_KEY } = requir
 const router = express.Router()
 
 router.get('/', (req, res) => {
-    req.session.options = req.session.options || {}
+    req.session.options = req.session.options || null
 
     if (typeof(req.query.new) === 'string') {
         req.session.game = generateGame(req.session.options)
         return res.redirect('/')
     }
 
-    let game = req.session.game || null
-    if (!game) {
-        game = generateGame(req.session.options)
-        req.session.game = game
-    }
+    let game = req.session.game || { word: '' }
 
     if (process.env.NODE_ENV === 'development') {
         console.log('current game', game)
@@ -28,8 +24,9 @@ router.get('/', (req, res) => {
         title: '',
         error: null,
         info: null,
-        guesses: game.guesses,
-        wordLength: game.word.length,
+        options: JSON.stringify(req.session.options),
+        guesses: game.guesses || [],
+        wordLength: game.word.length || 5,
         solved: game.solved || false,
         solution: (game.solved) ? game.word : null
     })
@@ -89,8 +86,13 @@ router.get('/guess', async (req, res) => {
 
 router.get('/status', (req, res) => {
     if (!req.session.game) {
-        res.status(400)
-        return res.json({ status: 400, message: 'There is no active game.' })
+        if (req.query.generate === 'true') {
+            game = generateGame(req.session.options || {})
+            req.session.game = game
+        } else {
+            res.status(404)
+            return res.json({ status: 404, message: 'There is no active game.' })
+        }
     }
 
     res.json({
@@ -101,6 +103,8 @@ router.get('/status', (req, res) => {
 })
 
 router.get('/options', (req, res) => {
+    req.session.options = req.session.options || {}
+    
     if (req.query.length) {
         let wordLength = Number(req.query.length)
         req.session.options.wordLength = (wordLength === 5 || wordLength === 6) ? wordLength : 5
