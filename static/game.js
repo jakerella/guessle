@@ -248,7 +248,7 @@ async function submitGuess(guess) {
             solution.innerHTML = `Congratulations! You solved this Guessle in 
                 <strong>${result.guesses.length}</strong> guess${(result.guesses.length === 1) ? '' : 'es'}!
                 <br><br>
-                The word was <a target='_blank' href='https://scrabble.merriam.com/finder/${guess}'>${guess}</a>.`
+                The word was <a target='_blank' href='https://www.merriam-webster.com/dictionary/${guess}'>${guess}</a>.`
             solution.classList.remove('hidden')
             document.querySelector('.guess-inputs').classList.add('hidden')
             submitGuessEl.classList.add('hidden')
