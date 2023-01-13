@@ -74,9 +74,6 @@ const getStats = async (cache, key) => {
         let totalGames = 0
         let totalGuesses = 0
 
-
-        // TODO: test old stats integration somehow
-
         // Combine old-style stats with new style for counts and averages
         const oldStats = JSON.parse(await cache.getAsync(OLD_STATS_KEY))
         const oldPlayerList = JSON.parse(await cache.getAsync(OLD_PLAYERS_KEY))
@@ -91,11 +88,17 @@ const getStats = async (cache, key) => {
         }
         const oldPlayerCount = (oldPlayerList) ? oldPlayerList.length : 0
 
+
+        const guessCounts = [].concat(oldGuessCounts)
         for (guessAmt in guessFreq) {
             totalGuesses += (Number(guessAmt) * guessFreq[guessAmt])
             totalGames += guessFreq[guessAmt]
+
+            for (let i=0; i<guessFreq[guessAmt]; ++i) {
+                guessCounts.push(Number(guessAmt))
+            }
         }
-        const guessAverage = Math.round((totalGuesses / totalGames) * 10) / 10
+        const guessAverage = (totalGames) ? Math.round((totalGuesses / totalGames) * 10) / 10 : 0
 
         const stats = {
             startTime: (oldStats) ? oldStats.startTime : playerResults.s,
@@ -103,6 +106,7 @@ const getStats = async (cache, key) => {
             gamesQuit,
             playerCount: Object.keys(playerResults).length - 1 + oldPlayerCount,
             guessFreq,
+            guessCounts,
             guessAverage,
             playerResults
         }

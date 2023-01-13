@@ -22,14 +22,7 @@ document.querySelector('.clear-history').addEventListener('click', (e) => {
 })
 
 updateStats()
-
-const guessCounts = []
-for (guesses in globalStats.guessFreq) {
-    for (let i=0; i<globalStats.guessFreq[guesses]; ++i) {
-        guessCounts.push(Number(guesses))
-    }
-}
-makeGuessChart(guessCounts, document.querySelector('.global-chart.stat-chart'))
+makeGuessChart(globalStats.guessCounts, document.querySelector('.global-chart.stat-chart'))
 
 
 
