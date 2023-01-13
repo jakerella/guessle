@@ -6,7 +6,7 @@ While this is a tiny application that stores no permanent data (all data is stor
 
 | Version | Supported          |
 | ------- | ------------------ |
-| 0.1.x   | :white_check_mark: |
+| 1.x.y   | :white_check_mark: |
 
 
 ## Reporting a Vulnerability
