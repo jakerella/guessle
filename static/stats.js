@@ -22,7 +22,19 @@ document.querySelector('.clear-history').addEventListener('click', (e) => {
 })
 
 updateStats()
-makeGuessChart(globalGuessCounts, document.querySelector('.global-chart.stat-chart'))
+
+const guessCounts = []
+for (guesses in globalStats.guessFreq) {
+    for (let i=0; i<globalStats.guessFreq[guesses]; ++i) {
+        guessCounts.push(Number(guesses))
+    }
+}
+makeGuessChart(guessCounts, document.querySelector('.global-chart.stat-chart'))
+
+
+
+// TODO: show the new data!
+
 
 
 // ------------------ Add players stats from localstorage -------------------- //

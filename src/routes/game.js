@@ -1,7 +1,7 @@
 const express = require('express')
 const { generateGame, makeGuess, isGameSolved } = require('../logic/game')
 const { getClient } = require('../util/cache')
-const { incrementStats, addValueToList, GUESS_COUNTS_KEY, PLAYERS_KEY } = require('../util/stats')
+const { addPlayerResult } = require('../util/stats')
 
 const router = express.Router()
 
@@ -16,7 +16,7 @@ router.get('/', (req, res) => {
     let game = req.session.game || { word: '' }
 
     if (process.env.NODE_ENV === 'development') {
-        console.log('current game', game)
+        console.debug('current game', game)
     }
 
     res.render('home', {
@@ -60,15 +60,9 @@ router.get('/guess', async (req, res) => {
     req.session.game.solved = solved
     if (solved && process.env.DISABLE_STATS !== 'true') {
         try {
-            const stats = await incrementStats(req.cacheClient, ['gamesPlayed', 'gamesWon'])
-            if (stats) {
-                await addValueToList(req.cacheClient, GUESS_COUNTS_KEY, req.session.game.guesses.length)
-                if (req.ip) {
-                    await addValueToList(req.cacheClient, PLAYERS_KEY, req.ip, true)
-                }
-            }
+            await addPlayerResult(req.cacheClient, req.ip || 'anon', Number(req.session.game.guesses.length) || 0)
         } catch(err) {
-            console.warn('Unable to write global stats (win):', err.message)
+            console.error('Unable to write to global stats (win):', err.message)
             // Let this error go, we just won't write this win's result to global stats
         }
     }
@@ -142,12 +136,9 @@ router.get('/answer', async (req, res) => {
     
     if (process.env.DISABLE_STATS !== 'true') {
         try {
-            await incrementStats(req.cacheClient, ['gamesPlayed', 'gamesQuit'])
-            if (req.ip) {
-                await addValueToList(req.cacheClient, PLAYERS_KEY, req.ip, true)
-            }
+            await addPlayerResult(req.cacheClient, req.ip || 'anon', 0)
         } catch(err) {
-            console.warn('Unable to write global stats (give up):', err.message)
+            console.error('Unable to write to global stats (give up):', err.message)
             // Let this error go, we just won't write this win's result to global stats
         }
     }

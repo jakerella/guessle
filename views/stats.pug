@@ -4,7 +4,9 @@ block content
 
     script.
         // Feed the global guess counts into the client-side JS
-        const globalGuessCounts = [#{stats.guessCounts}];
+        
+        const globalStats = !{JSON.stringify(stats)};
+        console.log("Global stats:", globalStats)
 
     article.game-stats
         h2.sub-header Game Stats
@@ -25,38 +27,35 @@ block content
             table.global-stats.stats-list
                 tbody
                     tr 
+                        - var gamesPlayed = stats.gamesWon + stats.gamesQuit
                         th Games Played
-                        td.games-played= stats.gamesPlayed || 0
+                        td.games-played= gamesPlayed
                     tr 
                         th Games Won
                         td
                             - var winPercent = 0
-                            if stats.gamesPlayed > 0
-                                - winPercent = Math.round(((stats.gamesWon || 0) / stats.gamesPlayed) * 100)
+                            if gamesPlayed > 0
+                                - winPercent = Math.round(((stats.gamesWon || 0) / gamesPlayed) * 100)
                             span.games-won= stats.gamesWon || 0
                             |  (
                             span.games-won-percent= winPercent
                             | %)
                     tr 
                         th Average Guesses
-                        td.guess-average
-                            if stats.gamesPlayed > 0
-                                = stats.guessAverage
-                            else
-                                | 0
+                        td.guess-average= stats.guessAverage
                     tr 
                         th Games Given Up
                         td 
                             - var quitPercent = 0
-                            if stats.gamesPlayed > 0
-                                - quitPercent = Math.round(((stats.gamesQuit || 0) / stats.gamesPlayed) * 100)
+                            if gamesPlayed > 0
+                                - quitPercent = Math.round(((stats.gamesQuit || 0) / gamesPlayed) * 100)
                             span.games-quit= stats.gamesQuit || 0
                             |  (
                             span.games-quit-percent= quitPercent
                             | %)
                     tr
                         th Total Player Count 
-                        td.player-count= (stats.players && stats.players.length) || '?'
+                        td.player-count= stats.playerCount
                 
             table.global-chart.stat-chart
                 tbody

@@ -1,5 +1,6 @@
 
 .env
+dump.rdb
 
 # Logs
 logs

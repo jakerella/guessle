@@ -5,9 +5,41 @@ if (DISABLE_STATS) {
     console.info('Collecting stats for this server')
 }
 
-const STATS_KEY = process.env.STATS_KEY || 'GUESSLE_STATS'
-const PLAYERS_KEY = 'players'
-const GUESS_COUNTS_KEY = 'guessCounts'
+const PLAYER_RESULTS_KEY = process.env.PLAYER_RESULTS_KEY || 'playerResults'
+const GUESS_FREQ_KEY = process.env.GUESS_FREQ_KEY || 'guessFreq'
+
+/**
+structure of player results: {
+    "s": ts,  // start timestamp of results collection
+    ip: {  // unique player ID (defaults to IP on front end currently)
+        dayNum: [ wins, quits ]  // map keyed by days since start to get frequency stats
+    },
+    ...  // one entry per player (supercedes previous stat collection mechanism)
+}
+structure of guess frequency: {
+    guessAmt: count,
+    ...
+}
+*/
+
+
+/**
+ // These are the old cache keys and structure:
+ {
+   startTime: 1673535391227,
+   gamesPlayed: 23,
+   gamesWon: 20,
+   gamesQuit: 3,
+   players: ['1.2.3.4', '2.3.4.5'],
+   guessCounts: [2,6,3,9,3,5,3,5],
+   guessAverage: 3.7
+ }
+ */
+ const OLD_STATS_KEY = process.env.STATS_KEY || 'GUESSLE_STATS'
+ const OLD_PLAYERS_KEY = 'players'
+ const OLD_GUESS_COUNTS_KEY = 'guessCounts'
+
+
 
 const getStats = async (cache, key) => {
     if (DISABLE_STATS) { return null }
@@ -17,14 +49,132 @@ const getStats = async (cache, key) => {
         return null
     }
 
-    if (!key) { key = STATS_KEY }
+    if (key) {
+        return JSON.parse(await cache.getAsync(key))
+    } else {
 
-    let stats = JSON.parse(await cache.getAsync(key))
-    if (stats === null && key === STATS_KEY) {
-        stats = await resetAllStats(cache)
+        const playerResults = JSON.parse(await cache.getAsync(PLAYER_RESULTS_KEY))
+        const guessFreq = JSON.parse(await cache.getAsync(GUESS_FREQ_KEY))
+        if (playerResults === null && guessFreq === null) {
+            await resetAllStats(cache)
+        }
+
+        let gamesWon = 0
+        let gamesQuit = 0
+
+        for (id in playerResults) {
+            if (id !== 's') {
+                for (d in playerResults[id]) {
+                    gamesWon += playerResults[id][d][0]
+                    gamesQuit += playerResults[id][d][1]
+                }
+            }
+        }
+
+        let totalGames = 0
+        let totalGuesses = 0
+
+
+        // TODO: test old stats integration somehow
+
+        // Combine old-style stats with new style for counts and averages
+        const oldStats = JSON.parse(await cache.getAsync(OLD_STATS_KEY))
+        const oldPlayerList = JSON.parse(await cache.getAsync(OLD_PLAYERS_KEY))
+        const oldGuessCounts = JSON.parse(await cache.getAsync(OLD_GUESS_COUNTS_KEY))
+        if (oldStats) {
+            gamesWon += oldStats.gamesWon
+            gamesQuit += oldStats.gamesQuit
+        }
+        if (oldGuessCounts) {
+            totalGames += oldStats.gamesPlayed
+            totalGuesses += oldGuessCounts.reduce((t, v) => t+v, 0)
+        }
+        const oldPlayerCount = (oldPlayerList) ? oldPlayerList.length : 0
+
+        for (guessAmt in guessFreq) {
+            totalGuesses += (Number(guessAmt) * guessFreq[guessAmt])
+            totalGames += guessFreq[guessAmt]
+        }
+        const guessAverage = Math.round((totalGuesses / totalGames) * 10) / 10
+
+        const stats = {
+            startTime: (oldStats) ? oldStats.startTime : playerResults.s,
+            gamesWon,
+            gamesQuit,
+            playerCount: Object.keys(playerResults).length - 1 + oldPlayerCount,
+            guessFreq,
+            guessAverage,
+            playerResults
+        }
+
+        return stats
     }
-    return stats
 }
+
+
+const addPlayerResult = async (cache, playerId, result, day = 0) => {
+    if (DISABLE_STATS) { return null }
+
+    if (!cache) {
+        console.warn('No cache client, unable to increment stat')
+        return null
+    }
+
+    if (process.env.NODE_ENV === 'development') {
+        console.debug(`Adding player result: ${playerId} had a result of ${result} on day ${day}`)
+    }
+
+    let playerResults = JSON.parse(await cache.getAsync(PLAYER_RESULTS_KEY))
+    if (playerResults === null) { playerResults = {s:Date.now()} }
+
+    if (!playerResults[playerId]) { playerResults[playerId] = {} }
+
+    const dayCount = day || Math.floor((Date.now() - playerResults.s) / 86400000)
+
+    if (!playerResults[playerId][dayCount]) { playerResults[playerId][dayCount] = [0,0] }
+    
+    result = Number(result) || 0
+    const resultIndex = (result > 0) ? 0 : 1  // win vs loss
+    playerResults[playerId][dayCount][resultIndex] += 1
+
+    await cache.setAsync(PLAYER_RESULTS_KEY, JSON.stringify(playerResults))
+
+    if (result > 0) {
+        try {
+            let guessCounts = JSON.parse(await cache.getAsync(GUESS_FREQ_KEY))
+            if (!guessCounts) { guessCounts = {} }
+            if (!guessCounts[result]) { guessCounts[result] = 0 }
+            guessCounts[result] += 1
+            console.debug('Setting you guess counts:', guessCounts)
+            await cache.setAsync(GUESS_FREQ_KEY, JSON.stringify(guessCounts))
+
+        } catch(err) {
+            console.debug('Unable to add guess count to frequency stats during player result:', err.message)
+            // We don't want to fail the original addition... yes, our stats may be off, but I think this is better
+        }
+    }
+}
+
+
+const setStatsStart = async (cache, timestamp) => {
+    if (DISABLE_STATS) { return null }
+    
+    if (!cache) {
+        console.warn('No cache client, unable to reset stats')
+        return null
+    }
+
+    if (!Number(timestamp)) {
+        throw new Error('Invalid timestamp provided to reset stats start time')
+    }
+
+    let playerResults = JSON.parse(await cache.getAsync(PLAYER_RESULTS_KEY))
+    if (playerResults === null) { playerResults = { s: Date.now() } }
+    playerResults.s = timestamp
+
+    await cache.setAsync(PLAYER_RESULTS_KEY, JSON.stringify(playerResults))
+}
+
 
 const resetAllStats = async (cache) => {
     if (DISABLE_STATS) { return null }
@@ -34,96 +184,14 @@ const resetAllStats = async (cache) => {
         return null
     }
 
-    const stats = {
-        startTime: Date.now(),
-        gamesPlayed: 0,
-        gamesWon: 0,
-        gamesQuit: 0
-    }
-    await cache.setAsync(PLAYERS_KEY, '[]')
-    await cache.setAsync(GUESS_COUNTS_KEY, '[]')
-    await cache.setAsync(STATS_KEY, JSON.stringify(stats))
-    return stats
+    await cache.setAsync(GUESS_FREQ_KEY, '{}')
+    await cache.setAsync(PLAYER_RESULTS_KEY, `{"s": ${Date.now()}}`)
 }
 
-const addNewStat = async (cache, key, value=null) => {
-    if (DISABLE_STATS) { return null }
-    if (!key) { throw new Error('No key provided for the new stat item') }
-    
-    if (!cache) {
-        console.warn('No cache client, unable to add new stat')
-        return null
-    }
-
-    const stats = await getStats(cache)
-    if (!stats) {
-        throw new Error('Unable to get current stats object to add new item')
-    }
-
-    stats[key] = value
-    await cache.setAsync(STATS_KEY, JSON.stringify(stats))
-
-    return stats
-}
-
-const incrementStats = async (cache, keys) => {
-    if (DISABLE_STATS) { return null }
-    if (!Array.isArray(keys)) { throw new Error('No array of keys provided to increment stats') }
-    
-    if (!cache) {
-        console.warn('No cache client, unable to increment stat')
-        return null
-    }
-
-    const stats = await getStats(cache)
-    if (!stats) {
-        throw new Error('Unable to get current stats object to increment item')
-    }
-
-    keys.map((key) => {
-        if (!stats[key]) { stats[key] = 0 }
-        if (!typeof(stats[key]) === 'number') {
-            throw new Error(`Stat to increment is not a number (${key})`)
-        }
-        stats[key]++
-        return { [key]: stats[key] }
-    })
-    
-    await cache.setAsync(STATS_KEY, JSON.stringify(stats))
-
-    return stats
-}
-
-const addValueToList = async (cache, key, value=null, unique=false) => {
-    if (DISABLE_STATS) { return null }
-    if (!key) { throw new Error('No key provided for the stat item to add to') }
-    
-    if (!cache) {
-        console.warn('No cache client, unable to add new value to stat')
-        return null
-    }
-
-    let statList = JSON.parse(await cache.getAsync(key))
-    if (statList === null) { statList = [] }
-    
-    if (!Array.isArray(statList)) {
-        throw new Error('That key already exists in the cache and is not an array, unable to add a value to it')
-    }
-
-    if (!unique || !statList.includes(value)) {
-        statList.push(value)
-    }
-    await cache.setAsync(key, JSON.stringify(statList))
-
-    return statList
-}
 
 module.exports = {
     resetAllStats,
+    setStatsStart,
     getStats,
-    addNewStat,
-    incrementStats,
-    addValueToList,
-    PLAYERS_KEY,
-    GUESS_COUNTS_KEY
+    addPlayerResult
 }

@@ -1,9 +1,10 @@
 const express = require('express')
-const { getStats, resetAllStats, GUESS_COUNTS_KEY, PLAYERS_KEY } = require('../util/stats')
+const { getStats, addPlayerResult, setStatsStart, resetAllStats, GUESS_COUNTS_KEY, PLAYERS_KEY, PLAYER_RESULTS_KEY } = require('../util/stats')
 const { getClient } = require('../util/cache')
 const AppError = require('../util/AppError')
 
 const router = express.Router()
+
 
 router.get('/', async (req, res, next) => {
     req.cacheClient = getClient(process.env.REDIS_URL)
@@ -12,14 +13,8 @@ router.get('/', async (req, res, next) => {
     }
 
     const stats = await getStats(req.cacheClient)
-    stats[PLAYERS_KEY] = await getStats(req.cacheClient, PLAYERS_KEY) || []
-    stats.guessCounts = await getStats(req.cacheClient, GUESS_COUNTS_KEY) || []
 
-    if (stats.guessCounts.length) {
-        stats.guessAverage = Math.round(((stats.guessCounts.reduce((t, v) => t+v, 0)) / stats.guessCounts.length) * 10) / 10
-    } else {
-        stats.guessAverage = 0
-    }
+    if (process.env.NODE_ENV === 'development') { console.debug(stats) }
 
     res.render('stats', {
         page: 'stats',
@@ -36,13 +31,84 @@ router.get('/', async (req, res, next) => {
 })
 
 
+router.get('/add-player-result', async (req, res, next) => {
+    if (req.query.key !== process.env.ADMIN_KEY) {
+        return next(new AppError('You are not authorized to perform this action.', 401))
+    }
+
+    req.cacheClient = getClient(process.env.REDIS_URL)
+    if (!req.cacheClient) {
+        return next(new AppError('No cache client present in session', 500))
+    }
+
+    if (!req.query.player || !req.query.result) {
+        return next(new AppError('You must provide at least a player ID (IP, etc) and result (number of guesses, or 0 for quit).', 401))
+    }
+
+    const cacheClient = getClient(process.env.REDIS_URL)
+    if (!cacheClient) {
+        return next(new AppError('No cache client present in session', 500))
+    }
+    
+    try {
+        await addPlayerResult(cacheClient, req.query.player, Number(req.query.result) || 0, Number(req.query.day) || 0)
+    } catch(err) {
+        console.warn(err)
+        return next(new AppError(err.message, 400))
+    }
+
+    res.redirect('/stats')
+})
+
+
+router.get('/set-start', async (req, res, next) => {
+    if (req.query.key !== process.env.ADMIN_KEY) {
+        return next(new AppError('You are not authorized to perform this action.', 401))
+    }
+
+    req.cacheClient = getClient(process.env.REDIS_URL)
+    if (!req.cacheClient) {
+        return next(new AppError('No cache client present in session', 500))
+    }
+
+    if (!req.query.start) {
+        return next(new AppError('You must provide a start date or timestamp', 401))
+    }
+
+    const start = new Date(Number(req.query.start) || req.query.start)
+    if (!start || !start.getTime()) {
+        return next(new AppError('You must provide a valid start date string or timestamp', 401))
+    }
+
+    const cacheClient = getClient(process.env.REDIS_URL)
+    if (!cacheClient) {
+        return next(new AppError('No cache client present in session', 500))
+    }
+    
+    try {
+        console.warn(err)
+        await setStatsStart(cacheClient, start.getTime())
+    } catch(err) {
+        return next(new AppError(err.message, 400))
+    }
+
+    res.redirect('/stats')
+})
+
+
 router.get('/reset', async (req, res, next) => {
     if (req.query.key === process.env.ADMIN_KEY) {
         const cacheClient = getClient(process.env.REDIS_URL)
         if (!cacheClient) {
             return next(new AppError('No cache client present in session', 500))
         }
-        await resetAllStats(cacheClient)
+
+        try {
+            await resetAllStats(cacheClient)
+        } catch(err) {
+            console.warn(err)
+            return next(new AppError(err.message, 400))
+        }
         res.redirect('/stats')
 
     } else {
