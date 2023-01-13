@@ -23,7 +23,7 @@ document.querySelector('.clear-history').addEventListener('click', (e) => {
 
 updatePlayerStats()
 
-calculatePerDayStats(globalStats.playerResults)
+calculatePerDayStats(globalStats)
 
 const guessCounts = []
 for (let guesses in globalStats.guessFreq) {
@@ -34,24 +34,27 @@ for (let guesses in globalStats.guessFreq) {
 makeGuessChart(guessCounts, document.querySelector('.global-chart.stat-chart'))
 
 
-function calculatePerDayStats(playerResults) {
+function calculatePerDayStats(globalStats) {
     let totalPlayed = 0
     let totalPlayers = 0
-    for (let id in playerResults) {
-        for (let day in playerResults[id]) {
+    for (let id in globalStats.playerResults) {
+        for (let day in globalStats.playerResults[id]) {
             totalPlayers++
-            totalPlayed += (playerResults[id][day][0] + playerResults[id][day][1])
+            totalPlayed += (globalStats.playerResults[id][day][0] + globalStats.playerResults[id][day][1])
         }
     }
     
-    const daysPast = Math.ceil((Date.now() - playerResults.s) / 86400000)
+    const daysPast = Math.ceil((Date.now() - globalStats.playerResults.s) / 86400000)
     
     const ppd = Math.round((totalPlayers / daysPast) * 10) / 10
     const gpd = Math.round((totalPlayed / daysPast) * 10) / 10
     document.querySelector('.players-per-day .value').innerText = ppd
-    document.querySelector('.players-per-day .since').innerText = `(since ${(new Date(playerResults.s)).toLocaleDateString()})`
     document.querySelector('.games-per-day .value').innerText = gpd
-    document.querySelector('.games-per-day .since').innerText = `(since ${(new Date(playerResults.s)).toLocaleDateString()})`
+    
+    if (globalStats.startTime !== globalStats.playerResults.s) {
+        document.querySelector('.players-per-day .since').innerText = `(since ${(new Date(globalStats.playerResults.s)).toLocaleDateString()})`
+        document.querySelector('.games-per-day .since').innerText = `(since ${(new Date(globalStats.playerResults.s)).toLocaleDateString()})`
+    }
 }
 
 
