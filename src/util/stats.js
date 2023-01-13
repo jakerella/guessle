@@ -11,7 +11,7 @@ const GUESS_FREQ_KEY = process.env.GUESS_FREQ_KEY || 'guessFreq'
 /**
 structure of player results: {
     "s": ts,  // start timestamp of results collection
-    ip: {  // unique player ID (defaults to IP on front end currently)
+    id: {  // unique player ID (defaults to IP on front end currently)
         dayNum: [ wins, quits ]  // map keyed by days since start to get frequency stats
     },
     ...  // one entry per player (supercedes previous stat collection mechanism)

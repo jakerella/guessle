@@ -10,6 +10,7 @@ const AppError = require('./util/AppError')
 const game = require('./routes/game')
 const stats = require('./routes/stats')
 const history = require('./routes/history')
+const privacy = require('./routes/privacy')
 
 // set default env vars
 const PORT = process.env['PORT'] || 80
@@ -43,6 +44,7 @@ app.use(session({
 // Add in our routes
 app.use('/stats', stats)
 app.use('/history', history)
+app.use('/privacy', privacy)
 app.use('/', game)  // the game is mounted to the root route, so needs to be last
 
 

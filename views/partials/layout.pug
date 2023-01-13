@@ -32,13 +32,19 @@ html(lang='en-US')
 
         footer
             p 
+                | Your user ID: 
+                span.user-id= userId 
+                |  (view 
+                a(href='/privacy') privacy policy
+                | )
+            p 
                 | Yes, it's a 
                 a(href='https://www.powerlanguage.co.uk/wordle/') Wordle
                 |  clone.
+            p 
+                | View the game's 
+                a(href='/stats') global stats
             p
                 | &copy; Jordan Kasper 2021 | See this code on 
                 a(href='https://github.com/jakerella/guessle' target='_blank' title='View the Wordle Clone code on GitHub')
                     | GitHub
-            p 
-                | View the game's 
-                a(href='/stats') global stats

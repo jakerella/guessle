@@ -1,10 +1,18 @@
+
 const express = require('express')
+const requestIp = require('request-ip')
 const { getStats, addPlayerResult, setStatsStart, resetAllStats, GUESS_COUNTS_KEY, PLAYERS_KEY, PLAYER_RESULTS_KEY } = require('../util/stats')
 const { getClient } = require('../util/cache')
 const AppError = require('../util/AppError')
 
 const router = express.Router()
 
+
+router.use((req, res, next) => {
+    // We call this "userId" so that we could use something else in the future if we want
+    req.session.userId = requestIp.getClientIp(req)
+    next()
+})
 
 router.get('/', async (req, res, next) => {
     req.cacheClient = getClient(process.env.REDIS_URL)
@@ -22,7 +30,8 @@ router.get('/', async (req, res, next) => {
         error: null,
         info: null,
         stats,
-        disabled: process.env.DISABLE_STATS === 'true' || false
+        disabled: process.env.DISABLE_STATS === 'true' || false,
+        userId: req.session.userId
     })
 
     try {

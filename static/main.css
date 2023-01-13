@@ -467,4 +467,8 @@ footer {
 footer a:link, footer a:visited {
     color: #668;
 }
-
+footer .user-id {
+    font-weight: bold;
+    font-family: 'Courier New', Courier, monospace;
+    color: #666;
+}

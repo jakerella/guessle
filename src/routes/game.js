@@ -1,9 +1,17 @@
 const express = require('express')
+const requestIp = require('request-ip')
 const { generateGame, makeGuess, isGameSolved } = require('../logic/game')
 const { getClient } = require('../util/cache')
 const { addPlayerResult } = require('../util/stats')
 
+
 const router = express.Router()
+
+router.use((req, res, next) => {
+    // We call this "userId" so that we could use something else in the future if we want
+    req.session.userId = requestIp.getClientIp(req)
+    next()
+})
 
 router.get('/', (req, res) => {
     req.session.options = req.session.options || null
@@ -28,7 +36,8 @@ router.get('/', (req, res) => {
         guesses: game.guesses || [],
         wordLength: game.word.length || 5,
         solved: game.solved || false,
-        solution: (game.solved) ? game.word : null
+        solution: (game.solved) ? game.word : null,
+        userId: req.session.userId
     })
 })
 
@@ -60,7 +69,7 @@ router.get('/guess', async (req, res) => {
     req.session.game.solved = solved
     if (solved && process.env.DISABLE_STATS !== 'true') {
         try {
-            await addPlayerResult(req.cacheClient, req.ip || 'anon', Number(req.session.game.guesses.length) || 0)
+            await addPlayerResult(req.cacheClient, req.session.userId || 'anon', Number(req.session.game.guesses.length) || 0)
         } catch(err) {
             console.error('Unable to write to global stats (win):', err.message)
             // Let this error go, we just won't write this win's result to global stats
@@ -136,7 +145,7 @@ router.get('/answer', async (req, res) => {
     
     if (process.env.DISABLE_STATS !== 'true') {
         try {
-            await addPlayerResult(req.cacheClient, req.ip || 'anon', 0)
+            await addPlayerResult(req.cacheClient, req.session.userId || 'anon', 0)
         } catch(err) {
             console.error('Unable to write to global stats (give up):', err.message)
             // Let this error go, we just won't write this win's result to global stats
