@@ -321,6 +321,11 @@ table.stats-list th {
 table.stats-list td {
     padding-left: 0.5rem;
 }
+table.stats-list .per-day .since {
+    color: #bbb;
+    padding-left: 1em;
+    font-style: italic;
+}
 
 table.stat-chart {
     margin: 0 auto;

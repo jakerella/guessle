@@ -86,9 +86,9 @@ router.get('/set-start', async (req, res, next) => {
     }
     
     try {
-        console.warn(err)
         await setStatsStart(cacheClient, start.getTime())
     } catch(err) {
+        console.warn(err)
         return next(new AppError(err.message, 400))
     }
 

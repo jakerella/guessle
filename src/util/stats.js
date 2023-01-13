@@ -102,6 +102,7 @@ const getStats = async (cache, key) => {
 
         const stats = {
             startTime: (oldStats) ? oldStats.startTime : playerResults.s,
+            newStatsStart: playerResults.s,
             gamesWon,
             gamesQuit,
             playerCount: Object.keys(playerResults).length - 1 + oldPlayerCount,

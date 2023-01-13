@@ -17,14 +17,16 @@ document.querySelector('.clear-history').addEventListener('click', (e) => {
     e.preventDefault()
     if (window.confirm('Are you sure you want to clear your game history and reset your stats?')) {
         localStorage.setItem(HISTORY_KEY, '[]')
-        updateStats()
+        updatePlayerStats()
     }
 })
 
-updateStats()
+updatePlayerStats()
+
+calculatePerDayStats(globalStats.playerResults)
 
 const guessCounts = []
-for (guesses in globalStats.guessFreq) {
+for (let guesses in globalStats.guessFreq) {
     for (let i=0; i<globalStats.guessFreq[guesses]; ++i) {
         guessCounts.push(Number(guesses))
     }
@@ -32,14 +34,28 @@ for (guesses in globalStats.guessFreq) {
 makeGuessChart(guessCounts, document.querySelector('.global-chart.stat-chart'))
 
 
+function calculatePerDayStats(playerResults) {
+    let totalPlayed = 0
+    let totalPlayers = 0
+    for (let id in playerResults) {
+        for (let day in playerResults[id]) {
+            totalPlayers++
+            totalPlayed += (playerResults[id][day][0] + playerResults[id][day][1])
+        }
+    }
+    
+    const daysPast = Math.ceil((Date.now() - playerResults.s) / 86400000)
+    
+    const ppd = Math.round((totalPlayers / daysPast) * 10) / 10
+    const gpd = Math.round((totalPlayed / daysPast) * 10) / 10
+    document.querySelector('.players-per-day .value').innerText = ppd
+    document.querySelector('.players-per-day .since').innerText = `(since ${(new Date(playerResults.s)).toLocaleDateString()})`
+    document.querySelector('.games-per-day .value').innerText = gpd
+    document.querySelector('.games-per-day .since').innerText = `(since ${(new Date(playerResults.s)).toLocaleDateString()})`
+}
 
-// TODO: show the new data!
 
-
-
-// ------------------ Add players stats from localstorage -------------------- //
-
-function updateStats() {
+function updatePlayerStats() {
     try {
         const history = JSON.parse(localStorage.getItem(HISTORY_KEY))
         if (history) {

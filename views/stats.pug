@@ -56,6 +56,16 @@ block content
                     tr
                         th Total Player Count 
                         td.player-count= stats.playerCount
+                    tr.per-day
+                        th Players per Day
+                        td.players-per-day
+                            span.value= '?'
+                            span.since
+                    tr.per-day
+                        th Games per Day
+                        td.games-per-day
+                            span.value= '?'
+                            span.since
                 
             table.global-chart.stat-chart
                 tbody
@@ -84,7 +94,7 @@ block content
                         th 8
                         th 9
                         th 10+
-                    
+            
 
             h3 Player Stats
             table.player-stats.stats-list
