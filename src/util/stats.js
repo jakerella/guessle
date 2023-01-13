@@ -85,20 +85,20 @@ const getStats = async (cache, key) => {
         if (oldGuessCounts) {
             totalGames += oldStats.gamesPlayed
             totalGuesses += oldGuessCounts.reduce((t, v) => t+v, 0)
+
+            // convert old-style guess counts to new guess frequencies storage
+            for (let i=0; i<oldGuessCounts.length; ++i) {
+                if (!guessFreq[oldGuessCounts[i]]) { guessFreq[oldGuessCounts[i]] = 0 }
+                guessFreq[oldGuessCounts[i]] += 1
+            }
         }
         const oldPlayerCount = (oldPlayerList) ? oldPlayerList.length : 0
 
-
-        const guessCounts = [].concat(oldGuessCounts)
         for (guessAmt in guessFreq) {
             totalGuesses += (Number(guessAmt) * guessFreq[guessAmt])
             totalGames += guessFreq[guessAmt]
-
-            for (let i=0; i<guessFreq[guessAmt]; ++i) {
-                guessCounts.push(Number(guessAmt))
-            }
         }
-        const guessAverage = (totalGames) ? Math.round((totalGuesses / totalGames) * 10) / 10 : 0
+
 
         const stats = {
             startTime: (oldStats) ? oldStats.startTime : playerResults.s,
@@ -106,8 +106,7 @@ const getStats = async (cache, key) => {
             gamesQuit,
             playerCount: Object.keys(playerResults).length - 1 + oldPlayerCount,
             guessFreq,
-            guessCounts,
-            guessAverage,
+            guessAverage: (totalGames) ? Math.round((totalGuesses / totalGames) * 10) / 10 : 0,
             playerResults
         }
 
