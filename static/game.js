@@ -372,15 +372,19 @@ async function retrieveDictionary() {
         await sendServerOptions(options)
     }
 
-    // Build the letter inputs
-    const letters = []
-    const l = options.wordLength || 5
-    for (let i=0; i<l; ++i) {
-        letters.push(`<span class="input letter" id="guess-${i}"></span>`)
+    const guessEl = document.querySelector('.guess-inputs .guess')
+    if (guessEl) {
+        // Build the letter inputs
+        const letters = []
+        const l = options.wordLength || 5
+        for (let i=0; i<l; ++i) {
+            letters.push(`<span class="input letter" id="guess-${i}"></span>`)
+        }
+        
+        guessEl.innerHTML = letters.join('')
+        // set the global value for use in other places
+        inputs = Array.from(document.querySelectorAll('.input.letter'))
     }
-    document.querySelector('.guess-inputs .guess').innerHTML = letters.join('')
-    // set the global value for use in other places
-    inputs = Array.from(document.querySelectorAll('.input.letter'))
 
     console.info('Getting current game status...')
     const resp = await fetch('/status?generate=true')
@@ -396,7 +400,8 @@ async function retrieveDictionary() {
             showLetterHints(game.guesses)
         }
     } else if (resp.status === 404) {
-
+        console.info('No current game, redirecting user to force new game.')
+        return window.location.replace('/')
     }
 
     try {
