@@ -447,6 +447,9 @@ ul.history .guesses span {
     padding: 0.5em;
     text-align: center;
 }
+.player-results .geo-locate {
+    cursor: pointer;
+}
 
 
 .alert {

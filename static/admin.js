@@ -42,7 +42,7 @@ for (let id in globalStats.playerResults) {
     playerTotalGames.push(wins + quits)
 
     playerResultsTable.innerHTML += `<tr class='${(zebra) ? 'highlight' : ''}'>
-    <td class='user-id'>${id}</td>
+    <td class='user-id'>${id} <span class='geo-locate' data-ip='${id}'>⚑</span></td>
     <td class='start-date'>${(new Date(globalStats.playerResults.s + (dayIds[0] * 86400000))).toLocaleDateString()}</td>
     <td class='days'>${dayIds.length}</td>
     <td class='avg-played'>${Math.round((wins + quits) / dayIds.length)}</td>
@@ -51,6 +51,40 @@ for (let id in globalStats.playerResults) {
 </tr>`
     zebra = !zebra
 }
+
+playerResultsTable.addEventListener('click', async (e) => {
+    if (Array.from(e.target.classList).includes('geo-locate')) {
+        const data = await geoLocate(e.target.getAttribute('data-ip'))
+        if (data.country !== '?') {
+            e.target.innerHTML = `<img src='https://raw.githubusercontent.com/lipis/flag-icons/main/flags/4x3/${data.country.toLowerCase()}.svg' style='width:1.3em;' title='${data.country_name}'>`
+        } else {
+            e.target.innerHTML = `(unk)`
+        }
+        e.target.classList.remove('geo-locate')
+    }
+})
+
+async function geoLocate(ip) {
+    const unknownData = { country: '?', country_name: '?', city: '?' }
+
+    const resp = await fetch(`https://ipapi.co/${ip}/json/`)
+    if (resp.status !== 200) {
+        console.warn(resp.status, await resp.text())
+        return unknownData
+    }
+    try {
+        const data = await resp.json()
+        return {
+            country: data.country_code || '?',
+            city: data.city || '?',
+            country_name: data.country_name || '?'
+        }
+    } catch(err) {
+        console.warn(err)
+        return unknownData
+    }
+}
+
 
 
 playerDailyActivityTotals.sort((a,b) => a-b)
