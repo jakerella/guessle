@@ -12,6 +12,10 @@ header {
     text-align: center;
 }
 
+tr.highlight th, tr.highlight td {
+    background-color: #eef;
+}
+
 h3.no-break {
     display: inline-block;
     margin-right: 0.5rem;
@@ -352,6 +356,25 @@ table.stat-chart .stat-bar {
     background-color: #6d6;
 }
 
+.global-chart.stat-chart.daily-activity {
+    border-collapse: collapse;
+}
+.global-chart.stat-chart.daily-activity th {
+    padding-right: 0.5em;
+}
+.global-chart.stat-chart.daily-activity tfoot th {
+    padding-bottom: 0.4em;
+    vertical-align: top;
+}
+.global-chart.stat-chart.daily-activity tfoot td {
+    padding-bottom: 0.4em;
+    border-top: 1px solid #333;
+    transform: rotate(180deg);
+    text-align: right;
+    writing-mode: vertical-rl;
+    height: 4em;
+}
+
 
 ul.history {
     list-style: none;
@@ -403,6 +426,20 @@ ul.history .guesses span {
 }
 .showing-guesses .toggle-guesses::before {
     content: '▲';
+}
+
+
+.player-results {
+    border-collapse: collapse;
+    border-right: 1px solid #666;
+}
+.player-results thead {
+    border-bottom: 1px solid #666;
+}
+.player-results td, .player-results th {
+    border-left: 1px solid #666;
+    padding: 0.5em;
+    text-align: center;
 }
 
 

@@ -11,6 +11,7 @@ const game = require('./routes/game')
 const stats = require('./routes/stats')
 const history = require('./routes/history')
 const privacy = require('./routes/privacy')
+const admin = require('./routes/admin')
 
 // set default env vars
 const PORT = process.env['PORT'] || 80
@@ -22,6 +23,7 @@ const app = express()
 app.use(express.static('static'))
 app.set('view engine', 'pug')
 app.use(express.json())
+app.use(express.urlencoded({ extended: true }))
 
 
 // Set up the express session management with Redis
@@ -45,6 +47,7 @@ app.use(session({
 app.use('/stats', stats)
 app.use('/history', history)
 app.use('/privacy', privacy)
+app.use('/admin', admin)
 app.use('/', game)  // the game is mounted to the root route, so needs to be last
 
 

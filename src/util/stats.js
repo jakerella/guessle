@@ -116,7 +116,7 @@ const getStats = async (cache, key) => {
 }
 
 
-const addPlayerResult = async (cache, playerId, result, day = 0) => {
+const addPlayerResult = async (cache, playerId, result, day) => {
     if (DISABLE_STATS) { return null }
 
     if (!cache) {

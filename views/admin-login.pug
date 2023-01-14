@@ -1,0 +1,12 @@
+extends partials/simple.pug
+
+block content
+    h2 Please Log In
+
+    p
+        | Please enter your admin key to log into this page.
+    
+    form(action='/admin/login', method='POST')
+        input.admin-key(type='text', name='key', placeholder='1234567890')
+        input(type='submit', value='Log In')
+

@@ -1,0 +1,55 @@
+extends partials/simple.pug
+
+block content
+
+    script.
+        // Feed the global guess counts into the client-side JS
+        const globalStats = !{JSON.stringify(stats)};
+        console.log("Global stats:", globalStats)
+
+    //- TODO: Add actions for admins to take (mostly clearing stats?)
+
+    article.admin-stats
+        h2.sub-header Player Stats
+        
+        if disabled
+            p
+                | Global game stats are disabled.
+        else
+            p 
+                | Below are the full global game statistics for Guessle
+            
+            p
+                | Global stats have been collected since 
+                span.start-time= (new Date(stats.startTime)).toLocaleDateString()
+                | 
+            
+            table.global-stats.stats-list
+                tbody
+                    tr 
+                        th Median Days per Player
+                        td.med-days ?
+                    tr 
+                        th Median Games per Player
+                        td.med-games ?
+            
+            table.global-chart.stat-chart.daily-activity
+                tbody
+                    tr.tally
+                        th.label Games Played
+                tfoot
+                    tr
+                        th.label Last 30
+            
+            table.player-results
+                thead
+                    tr 
+                        th UserId
+                        th Start Date
+                        th Days Played
+                        th Avg Daily
+                        th Total Wins
+                        th Total Quits
+                tbody
+
+    script(src='admin.js')
