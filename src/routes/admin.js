@@ -33,7 +33,8 @@ router.get('/', async (req, res, next) => {
         error: null,
         info: null,
         stats,
-        disabled: process.env.DISABLE_STATS === 'true' || false
+        disabled: process.env.DISABLE_STATS === 'true' || false,
+        isAdmin: (req.session.adminKey === process.env.ADMIN_KEY)
     })
 
     try {

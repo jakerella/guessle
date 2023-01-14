@@ -37,7 +37,8 @@ router.get('/', (req, res) => {
         wordLength: game.word.length || 5,
         solved: game.solved || false,
         solution: (game.solved) ? game.word : null,
-        userId: req.session.userId
+        userId: req.session.userId,
+        isAdmin: (req.session.adminKey === process.env.ADMIN_KEY)
     })
 })
 

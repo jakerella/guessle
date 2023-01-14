@@ -31,7 +31,8 @@ router.get('/', async (req, res, next) => {
         info: null,
         stats,
         disabled: process.env.DISABLE_STATS === 'true' || false,
-        userId: req.session.userId
+        userId: req.session.userId,
+        isAdmin: (req.session.adminKey === process.env.ADMIN_KEY)
     })
 
     try {

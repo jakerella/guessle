@@ -16,7 +16,8 @@ router.get('/', async (req, res, next) => {
         title: 'Privacy Policy',
         error: null,
         info: null,
-        userId: req.session.userId
+        userId: req.session.userId,
+        isAdmin: (req.session.adminKey === process.env.ADMIN_KEY)
     })
 })
 

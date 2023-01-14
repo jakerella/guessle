@@ -44,6 +44,10 @@ html(lang='en-US')
             p 
                 | View the game's 
                 a(href='/stats') global stats
+                if isAdmin
+                    |  (
+                    a(href="/admin") admin
+                    | )
             p
                 | &copy; Jordan Kasper 2021 | See this code on 
                 a(href='https://github.com/jakerella/guessle' target='_blank' title='View the Wordle Clone code on GitHub')

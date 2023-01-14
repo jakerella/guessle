@@ -15,6 +15,9 @@ header {
 tr.highlight th, tr.highlight td {
     background-color: #eef;
 }
+body.dark-mode tr.highlight th, body.dark-mode tr.highlight td {
+    background-color: #444;
+}
 
 h3.no-break {
     display: inline-block;

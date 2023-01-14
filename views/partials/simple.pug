@@ -35,6 +35,11 @@ html(lang='en-US')
                 |  (view 
                 a(href='/privacy') privacy policy
                 | )
+                if isAdmin
+                    |  (
+                    a(href="/admin") admin
+                    | )
+                
             p 
                 | Yes, it's a 
                 a(href='https://www.powerlanguage.co.uk/wordle/') Wordle
