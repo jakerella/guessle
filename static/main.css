@@ -377,6 +377,9 @@ table.stat-chart .stat-bar {
     writing-mode: vertical-rl;
     height: 4em;
 }
+body.dark-mode .global-chart.stat-chart.daily-activity tfoot td {
+    border-top: 1px solid #ccc;
+}
 
 
 ul.history {

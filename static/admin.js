@@ -8,8 +8,12 @@ try {
 
 const currDay = Math.floor((Date.now() - globalStats.playerResults.s) / 86400000)
 const dailyTotals = {}
-let maxDaily = 0
-for (let i=currDay; i>-1 && i>(currDay-30); --i) { dailyTotals[i] = 0; }
+let maxDailyGames = 0
+let maxDailyPlayers = 0
+for (let i=currDay; i>-1 && i>(currDay-30); --i) {
+    dailyTotals[i] = [0,0];  // [games,players]
+}
+
 
 const playerDailyActivityTotals = []
 const playerTotalGames = []
@@ -27,9 +31,11 @@ for (let id in globalStats.playerResults) {
         wins += player[id][0]
         quits += player[id][1]
         if (dailyTotals[id] !== undefined) {
-            dailyTotals[id] += (player[id][0] + player[id][1])
+            dailyTotals[id][0] += (player[id][0] + player[id][1])
+            dailyTotals[id][1]++
+            if (dailyTotals[id][0] > maxDailyGames) { maxDailyGames = dailyTotals[id][0] }
+            if (dailyTotals[id][1] > maxDailyPlayers) { maxDailyPlayers = dailyTotals[id][1] }
         }
-        if (dailyTotals[id] > maxDaily) { maxDaily = dailyTotals[id] }
     })
 
     playerDailyActivityTotals.push(dayIds.length)
@@ -53,23 +59,32 @@ document.querySelector('.med-days').innerHTML = playerDailyActivityTotals[Math.c
 document.querySelector('.med-games').innerHTML = playerTotalGames[Math.ceil(playerTotalGames.length / 2)]
 
 
-const chartMax = 100
+const chartMaxHeight = 100
 const dailyChartDays = Object.keys(dailyTotals).sort()
-const chartEl = document.querySelector('.global-chart.stat-chart')
-const bars = []
+const dailyGamesChartEl = document.querySelector('.daily-activity.games-played')
+const dailyPlayersChartEl = document.querySelector('.daily-activity.active-players')
+const gameBars = []
+const playerBars = []
 const labels = []
 
-const multiplier = (maxDaily < (chartMax / 2)) ? 3 : ((maxDaily < chartMax) ? 2 : 1)
-const divisor = (maxDaily > chartMax) ? maxDaily / chartMax : 1
+const gamesMultiplier = (maxDailyGames < (chartMaxHeight / 2)) ? 3 : ((maxDailyGames < chartMaxHeight) ? 2 : 1)
+const gamesDivisor = (maxDailyGames > chartMaxHeight) ? maxDailyGames / chartMaxHeight : 1
+const playersMultiplier = (maxDailyPlayers < (chartMaxHeight / 2)) ? 3 : ((maxDailyPlayers < chartMaxHeight) ? 2 : 1)
+const playersDivisor = (maxDailyPlayers > chartMaxHeight) ? maxDailyPlayers / chartMaxHeight : 1
 
 for (let day in dailyChartDays) {
-    let height = (dailyTotals[day] * multiplier) / divisor
-    
     const date = (new Date(globalStats.playerResults.s + (day * 86400000))).toLocaleDateString()
+
+    const gamesBarHeight = (dailyTotals[day][0] * gamesMultiplier) / gamesDivisor
+    const playersBarHeight = (dailyTotals[day][1] * playersMultiplier) / playersDivisor
     
-    bars.push(`<td class='day-${day}'><span class='stat-bar' style='height:${height}px;'></span></td>`)
+    gameBars.push(`<td title='${dailyTotals[day][0]} games played'><span class='stat-bar' style='height:${gamesBarHeight}px;'></span></td>`)
+    playerBars.push(`<td title='${dailyTotals[day][1]} active players'><span class='stat-bar' style='height:${playersBarHeight}px;'></span></td>`)
     labels.push(`<td title='${date}'>${date.split('/').slice(0,2).join('/')}</td>`)
 }
 
-chartEl.querySelector('tbody tr').innerHTML += bars.join('')
-chartEl.querySelector('tfoot tr').innerHTML += labels.join('')
+dailyGamesChartEl.querySelector('tbody tr').innerHTML += gameBars.join('')
+dailyGamesChartEl.querySelector('tfoot tr').innerHTML += labels.join('')
+
+dailyPlayersChartEl.querySelector('tbody tr').innerHTML += playerBars.join('')
+dailyPlayersChartEl.querySelector('tfoot tr').innerHTML += labels.join('')
