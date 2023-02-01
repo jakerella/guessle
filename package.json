@@ -24,7 +24,7 @@
     "uuid": "^8.3.2"
   },
   "devDependencies": {
-    "node-fetch": "^2.6.7",
+    "node-fetch": "^3.3.0",
     "nodemon": "^2.0.20"
   }
 }
