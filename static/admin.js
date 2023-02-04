@@ -6,11 +6,15 @@ try {
 } catch(e) { /* don't care... */ }
 
 
+const queryParams = document.location.search.slice(1).split('&').reduce((q, e) => { const p = e.split('='); q[p[0]] = (q[p[0]]) ? [...q[p[0]], p[1]] : p[1]; return q }, {})
+const daysInChart = Math.min(Number(queryParams.days) || 14, 60)
+Array.from(document.querySelectorAll('.stat-chart .days')).forEach((e) => e.innerHTML = daysInChart)
+
 const currDay = Math.floor((Date.now() - globalStats.playerResults.s) / 86400000)
 const dailyTotals = {}
 let maxDailyGames = 0
 let maxDailyPlayers = 0
-for (let i=currDay; i>-1 && i>(currDay-30); --i) {
+for (let i=currDay; i>-1 && i>(currDay-daysInChart); --i) {
     dailyTotals[i] = [0,0];  // [games,players]
 }
 
@@ -94,7 +98,7 @@ document.querySelector('.med-games').innerHTML = playerTotalGames[Math.ceil(play
 
 
 const chartMaxHeight = 100
-const dailyChartDays = Object.keys(dailyTotals).sort()
+const dailyChartDays = Object.keys(dailyTotals).map((k) => Number(k)).sort((a,b) => a-b)
 const dailyGamesChartEl = document.querySelector('.daily-activity.games-played')
 const dailyPlayersChartEl = document.querySelector('.daily-activity.active-players')
 const gameBars = []
@@ -106,7 +110,7 @@ const gamesDivisor = (maxDailyGames > chartMaxHeight) ? maxDailyGames / chartMax
 const playersMultiplier = (maxDailyPlayers < (chartMaxHeight / 2)) ? 3 : ((maxDailyPlayers < chartMaxHeight) ? 2 : 1)
 const playersDivisor = (maxDailyPlayers > chartMaxHeight) ? maxDailyPlayers / chartMaxHeight : 1
 
-for (let day in dailyChartDays) {
+dailyChartDays.forEach((day) => {
     const date = (new Date(globalStats.playerResults.s + (day * 86400000))).toLocaleDateString()
 
     const gamesBarHeight = (dailyTotals[day][0] * gamesMultiplier) / gamesDivisor
@@ -115,7 +119,7 @@ for (let day in dailyChartDays) {
     gameBars.push(`<td title='${dailyTotals[day][0]} games played'><span class='stat-bar' style='height:${gamesBarHeight}px;'></span></td>`)
     playerBars.push(`<td title='${dailyTotals[day][1]} active players'><span class='stat-bar' style='height:${playersBarHeight}px;'></span></td>`)
     labels.push(`<td title='${date}'>${date.split('/').slice(0,2).join('/')}</td>`)
-}
+})
 
 dailyGamesChartEl.querySelector('tbody tr').innerHTML += gameBars.join('')
 dailyGamesChartEl.querySelector('tfoot tr').innerHTML += labels.join('')
