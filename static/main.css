@@ -315,6 +315,9 @@ h3 {
     margin-top: 1rem;
     text-align: center;
 }
+.scroll-admin-charts {
+    margin: 2rem 0 1rem 0;
+}
 
 
 table.stats-list {
