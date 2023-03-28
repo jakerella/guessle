@@ -115,8 +115,11 @@ function generateDailyCharts(daysBack = 0) {
         const gamesBarHeight = (dailyTotals[day][0] * gamesMultiplier) / gamesDivisor
         const playersBarHeight = (dailyTotals[day][1] * playersMultiplier) / playersDivisor
         
-        gameBars.push(`<td title='${dailyTotals[day][0]} games played'><span class='stat-bar' style='height:${gamesBarHeight}px;'></span></td>`)
-        playerBars.push(`<td title='${dailyTotals[day][1]} active players'><span class='stat-bar' style='height:${playersBarHeight}px;'></span></td>`)
+        const highGamesDisplay = (dailyTotals[day][0] >= maxDailyGames) ? dailyTotals[day][0] : ''
+        const highPlayersDisplay = (dailyTotals[day][1] >= maxDailyPlayers) ? dailyTotals[day][1] : ''
+
+        gameBars.push(`<td title='${dailyTotals[day][0]} games played'>${highGamesDisplay}<span class='stat-bar' style='height:${gamesBarHeight}px;'></span></td>`)
+        playerBars.push(`<td title='${dailyTotals[day][1]} active players'>${highPlayersDisplay}<span class='stat-bar' style='height:${playersBarHeight}px;'></span></td>`)
         labels.push(`<td title='${date}'>${date.split('/').slice(0,2).join('/')}</td>`)
     })
 
@@ -139,7 +142,7 @@ function generatePlayerTable() {
         const dayIds = Object.keys(player).sort()
         let wins = 0
         let quits = 0
-        
+
         dayIds.forEach((id) => {
             wins += player[id][0]
             quits += player[id][1]
