@@ -16,8 +16,8 @@
   "dependencies": {
     "connect-redis": "6.x",
     "dotenv": "^16.3.1",
-    "express": "^4.21.0",
-    "express-session": "^1.17.3",
+    "express": "^4.21.1",
+    "express-session": "^1.18.1",
     "pug": "^3.0.3",
     "redis": "^3.1.2",
     "request-ip": "^3.3.0",
