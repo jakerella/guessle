@@ -12,7 +12,12 @@ const getClient = (url) => {
         console.log('Getting new redis client...')
     }
 
-    let client = redis.createClient(url)
+    let client = redis.createClient({
+        url: url,
+        tls: {
+            rejectUnauthorized: false
+        }
+    })
 
     client.getAsync = promisify(client.get).bind(client)
     client.delAsync = promisify(client.del).bind(client)
