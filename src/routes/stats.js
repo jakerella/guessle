@@ -15,7 +15,7 @@ router.use((req, res, next) => {
 })
 
 router.get('/', async (req, res, next) => {
-    req.cacheClient = getClient(process.env.REDIS_URL)
+    req.cacheClient = getClient()
     if (!req.cacheClient) {
         return next(new AppError('No cache client present in session', 500))
     }
@@ -46,7 +46,7 @@ router.get('/add-player-result', async (req, res, next) => {
         return next(new AppError('You are not authorized to perform this action.', 401))
     }
 
-    req.cacheClient = getClient(process.env.REDIS_URL)
+    req.cacheClient = getClient()
     if (!req.cacheClient) {
         return next(new AppError('No cache client present in session', 500))
     }
@@ -55,7 +55,7 @@ router.get('/add-player-result', async (req, res, next) => {
         return next(new AppError('You must provide at least a player ID (IP, etc) and result (number of guesses, or 0 for quit).', 401))
     }
 
-    const cacheClient = getClient(process.env.REDIS_URL)
+    const cacheClient = getClient()
     if (!cacheClient) {
         return next(new AppError('No cache client present in session', 500))
     }
@@ -76,7 +76,7 @@ router.get('/set-start', async (req, res, next) => {
         return next(new AppError('You are not authorized to perform this action.', 401))
     }
 
-    req.cacheClient = getClient(process.env.REDIS_URL)
+    req.cacheClient = getClient()
     if (!req.cacheClient) {
         return next(new AppError('No cache client present in session', 500))
     }
@@ -90,7 +90,7 @@ router.get('/set-start', async (req, res, next) => {
         return next(new AppError('You must provide a valid start date string or timestamp', 401))
     }
 
-    const cacheClient = getClient(process.env.REDIS_URL)
+    const cacheClient = getClient()
     if (!cacheClient) {
         return next(new AppError('No cache client present in session', 500))
     }
@@ -108,7 +108,7 @@ router.get('/set-start', async (req, res, next) => {
 
 router.get('/reset', async (req, res, next) => {
     if (req.query.key === process.env.ADMIN_KEY) {
-        const cacheClient = getClient(process.env.REDIS_URL)
+        const cacheClient = getClient()
         if (!cacheClient) {
             return next(new AppError('No cache client present in session', 500))
         }

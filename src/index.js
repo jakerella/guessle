@@ -28,7 +28,10 @@ app.use(express.urlencoded({ extended: true }))
 
 // Set up the express session management with Redis
 let RedisStore = require('connect-redis')(session)
-let redisSessionClient = createClient(process.env.REDIS_URL)
+let redisSessionClient = createClient({
+    url: process.env.REDIS_URL,
+    tls: { rejectUnauthorized: false }
+})
 redisSessionClient.on('error', (err) => {
     console.error('Unable to maintain redis connection for session storage. Stopping server.')
     console.error(err.message)

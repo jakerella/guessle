@@ -53,7 +53,7 @@ router.get('/guess', async (req, res) => {
         return res.json({ status: 400, message: `Please guess a ${req.session.game.word.length}-letter word.` })
     }
 
-    req.cacheClient = getClient(process.env.REDIS_URL)
+    req.cacheClient = getClient()
     if (!req.cacheClient) {
         return next(new AppError('No cache client present in session', 500))
     }
@@ -135,7 +135,7 @@ router.get('/answer', async (req, res) => {
         return res.json({ status: 400, message: 'There is no active game.' })
     }
 
-    req.cacheClient = getClient(process.env.REDIS_URL)
+    req.cacheClient = getClient()
     if (!req.cacheClient) {
         return next(new AppError('No cache client present in session', 500))
     }

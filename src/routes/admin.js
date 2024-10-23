@@ -20,7 +20,7 @@ router.get('/', async (req, res, next) => {
 
     console.log(`Admin page accessed by IP address: ${requestIp.getClientIp(req)}`)
 
-    req.cacheClient = getClient(process.env.REDIS_URL)
+    req.cacheClient = getClient()
     if (!req.cacheClient) {
         return next(new AppError('No cache client present in session', 500))
     }

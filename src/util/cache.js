@@ -2,8 +2,8 @@ const { promisify } = require('util')
 const redis = require('redis')
 
 
-const getClient = (url) => {
-    if (!url) {
+const getClient = () => {
+    if (!process.env.REDIS_URL) {
         console.warn('WARNING: No Redis URL provided, cannot create cache client.')
         return null
     }
@@ -13,10 +13,8 @@ const getClient = (url) => {
     }
 
     let client = redis.createClient({
-        url: url,
-        tls: {
-            rejectUnauthorized: false
-        }
+        url: process.env.REDIS_URL,
+        tls: { rejectUnauthorized: false }
     })
 
     client.getAsync = promisify(client.get).bind(client)
