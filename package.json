@@ -14,7 +14,7 @@
     "watch": "./node_modules/nodemon/bin/nodemon.js -e js,pug,json ."
   },
   "dependencies": {
-    "connect-redis": "6.x",
+    "connect-redis": "8.x",
     "dotenv": "^17.2.1",
     "express": "^4.21.2",
     "express-session": "^1.18.2",
